@@ -168,7 +168,7 @@ export default function LandingPage() {
             <span>Hụi Tín</span>
           </div>
           <p className={styles.footerNote}>
-            © 2026 Hụi Tín. Nền tảng quản lý hụi — không phải tổ chức tín dụng hoặc ngân hàng.
+            © 2026 Justyle — Hụi Tín. Sổ hụi điện tử — không phải tổ chức tín dụng hoặc ngân hàng.
           </p>
         </div>
       </footer>

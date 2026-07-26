@@ -101,11 +101,19 @@ export async function forgotPassword(prevState: AuthState, formData: FormData): 
 
 export async function signInWithGoogle(formData?: FormData) {
   const supabase = await createClient();
+  
+  // Dynamically determine origin from request headers
+  const { headers } = await import('next/headers');
+  const headerStore = await headers();
+  const origin = headerStore.get('origin') 
+    || headerStore.get('x-forwarded-host') && `https://${headerStore.get('x-forwarded-host')}`
+    || process.env.NEXT_PUBLIC_APP_URL 
+    || 'http://localhost:3000';
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback`,
+      redirectTo: `${origin}/api/auth/callback`,
     },
   });
 

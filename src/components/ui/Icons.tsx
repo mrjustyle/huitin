@@ -11,21 +11,20 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
 // 1. Biểu tượng thương hiệu (Brand / Hụi Tín Logo)
 // Một vòng tròn đại diện cho vòng hụi. Nhiều điểm nhỏ đại diện cho các thành viên kết nối theo chu kỳ. Chữ T cách điệu (hoặc Check) ở trung tâm.
 export const IconBrand = ({ size = SIZE, ...props }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth={STROKE_WIDTH} strokeLinecap="round" strokeLinejoin="round" {...props}>
-    {/* Vòng tròn đứt đoạn thể hiện sự luân phiên */}
-    <path d="M12 3a9 9 0 0 1 9 9" />
-    <path d="M21 12a9 9 0 0 1-9 9" />
-    <path d="M12 21a9 9 0 0 1-9-9" />
-    <path d="M3 12a9 9 0 0 1 9-9" />
-    {/* Nodes */}
-    <circle cx="12" cy="3" r="1.5" fill="currentColor" />
-    <circle cx="21" cy="12" r="1.5" fill="currentColor" />
-    <circle cx="12" cy="21" r="1.5" fill="currentColor" />
-    <circle cx="3" cy="12" r="1.5" fill="currentColor" />
-    {/* Chữ T cách điệu hiện đại ở trung tâm kết hợp dấu kiểm (Accent) */}
-    <path d="M9 9h6" stroke="var(--primary)" />
-    <path d="M12 9v6" stroke="var(--primary)" />
-    <path d="M12 15l2-2" stroke="var(--primary)" />
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+    {/* Shield outline */}
+    <path d="M12 2L4 6v5c0 5.25 3.4 10.15 8 11.25C16.6 21.15 20 16.25 20 11V6l-8-4z" stroke="#16A085" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    {/* Rotation circle (dashed) */}
+    <circle cx="12" cy="12" r="5" stroke="#16A085" strokeWidth="1.2" strokeDasharray="4 2.5" fill="none" opacity="0.7" />
+    {/* 4 Nodes on circle */}
+    <circle cx="12" cy="7" r="1.2" fill="#16A085" />
+    <circle cx="17" cy="12" r="1.2" fill="#16A085" />
+    <circle cx="12" cy="17" r="1.2" fill="#16A085" />
+    <circle cx="7" cy="12" r="1.2" fill="#16A085" />
+    {/* T + checkmark at center */}
+    <path d="M10 10h4" stroke="#1ABC9C" strokeWidth="1.6" strokeLinecap="round" />
+    <path d="M12 10v3.5" stroke="#1ABC9C" strokeWidth="1.6" strokeLinecap="round" />
+    <path d="M12 13.5l1.5-1.5" stroke="#1ABC9C" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
 );
 
