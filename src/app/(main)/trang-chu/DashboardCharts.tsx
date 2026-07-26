@@ -14,6 +14,8 @@ import {
   Legend,
 } from 'recharts';
 import type { DashboardStats } from '@/features/dashboard/actions';
+import { IconCashOut, IconCashIn, IconLedger, IconCompleted, IconTrendUp, IconTrendDown, IconChart, IconDonut } from '@/components/ui/Icons';
+import EmptyState from '@/components/ui/EmptyState';
 import styles from './DashboardCharts.module.css';
 
 const COLORS = ['#16A085', '#2980B9', '#8E44AD', '#E67E22', '#E74C3C', '#1ABC9C'];
@@ -47,17 +49,19 @@ export function CashflowChart({ data }: { data: DashboardStats['cashflowByMonth'
   if (!data.length || data.every(d => d.contributed === 0 && d.received === 0)) {
     return (
       <div className={styles.chartCard}>
-        <h3 className={styles.chartTitle}>📈 Dòng tiền</h3>
-        <div className={styles.emptyChart}>
-          <p>Chưa có dữ liệu giao dịch</p>
-        </div>
+        <h3 className={styles.chartTitle}><IconChart size={18} /> Dòng tiền</h3>
+        <EmptyState 
+          icon={<IconChart size={48} />} 
+          title="Chưa có dữ liệu"
+          description="Bạn chưa có hoạt động đóng/nhận hụi nào trong 6 tháng gần đây."
+        />
       </div>
     );
   }
 
   return (
     <div className={styles.chartCard}>
-      <h3 className={styles.chartTitle}>📈 Dòng tiền 6 tháng gần nhất</h3>
+      <h3 className={styles.chartTitle}><IconChart size={18} /> Dòng tiền 6 tháng gần nhất</h3>
       <div className={styles.chartWrap}>
         <ResponsiveContainer width="100%" height={260}>
           <AreaChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
@@ -108,14 +112,23 @@ export function CashflowChart({ data }: { data: DashboardStats['cashflowByMonth'
 
 export function GroupBreakdownChart({ data }: { data: DashboardStats['groupBreakdown'] }) {
   if (!data.length) {
-    return null;
+    return (
+      <div className={styles.chartCard}>
+        <h3 className={styles.chartTitle}><IconDonut size={18} /> Phân bổ dây hụi</h3>
+        <EmptyState 
+          icon={<IconDonut size={48} />} 
+          title="Chưa có dữ liệu"
+          description="Tham gia hoặc tạo dây hụi để xem phân bổ dòng tiền của bạn."
+        />
+      </div>
+    );
   }
 
   const total = data.reduce((s, d) => s + d.value, 0);
 
   return (
     <div className={styles.chartCard}>
-      <h3 className={styles.chartTitle}>🍩 Phân bổ dây hụi</h3>
+      <h3 className={styles.chartTitle}><IconDonut size={18} /> Phân bổ dây hụi</h3>
       <div className={styles.chartWrap}>
         <ResponsiveContainer width="100%" height={260}>
           <PieChart>
@@ -163,10 +176,10 @@ export function GroupBreakdownChart({ data }: { data: DashboardStats['groupBreak
 
 export function KPICards({ stats }: { stats: DashboardStats }) {
   const cards = [
-    { label: 'Tổng đã đóng', value: stats.totalContributed, color: '#E74C3C', icon: '💸' },
-    { label: 'Tổng đã nhận', value: stats.totalReceived, color: '#16A085', icon: '💰' },
-    { label: 'Dây hoạt động', value: stats.activeGroups, color: '#2980B9', icon: '📋', isCount: true },
-    { label: 'Kỳ đã hoàn thành', value: stats.completedPeriods, color: '#8E44AD', icon: '✅', isCount: true },
+    { label: 'Tổng đã đóng', value: stats.totalContributed, color: '#E74C3C', icon: <IconCashOut size={20} /> },
+    { label: 'Tổng đã nhận', value: stats.totalReceived, color: '#16A085', icon: <IconCashIn size={20} /> },
+    { label: 'Dây hoạt động', value: stats.activeGroups, color: '#2980B9', icon: <IconLedger size={20} />, isCount: true },
+    { label: 'Kỳ đã hoàn thành', value: stats.completedPeriods, color: '#8E44AD', icon: <IconCompleted size={20} />, isCount: true },
   ];
 
   const netFlow = stats.totalReceived - stats.totalContributed;
@@ -185,7 +198,7 @@ export function KPICards({ stats }: { stats: DashboardStats }) {
         </div>
       ))}
       <div className={`${styles.kpiCard} ${styles.kpiCardWide}`}>
-        <div className={styles.kpiIcon}>{netFlow >= 0 ? '📊' : '📉'}</div>
+        <div className={styles.kpiIcon}>{netFlow >= 0 ? <IconTrendUp size={20} /> : <IconTrendDown size={20} />}</div>
         <div className={styles.kpiInfo}>
           <p className={styles.kpiValue} style={{ color: netFlow >= 0 ? '#16A085' : '#E74C3C' }}>
             {netFlow >= 0 ? '+' : ''}{formatCompact(netFlow)}

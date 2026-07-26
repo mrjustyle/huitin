@@ -10,6 +10,7 @@ import AuctionPanel from './AuctionPanel';
 import OpenAuctionButton from './OpenAuctionButton';
 import DisputeButton from './DisputeButton';
 import { IconPayment, IconSuccess, IconCycle, IconReceipt, IconConfirmed, IconPending, IconError } from '@/components/ui/Icons';
+import Tooltip from '@/components/ui/Tooltip';
 import styles from './page.module.css';
 
 export const metadata = {
@@ -488,7 +489,7 @@ export default async function PeriodDetailPage({
                 <tbody>
                   {allContributions.map((c: any) => (
                     <tr key={c.id}>
-                      <td>
+                      <td data-label="Thành viên">
                         <div className={styles.memberName}>
                           {(() => {
                             const name = c.hui_members?.user_profiles?.full_name;
@@ -500,15 +501,15 @@ export default async function PeriodDetailPage({
                         </div>
                         {isOwner && <div className={styles.memberPhone}>{c.hui_members?.user_profiles?.phone}</div>}
                       </td>
-                      <td>{formatVND(c.amount_due)}</td>
-                      <td>
+                      <td data-label="Số tiền">{formatVND(c.amount_due)}</td>
+                      <td data-label="Trạng thái">
                         <Badge variant={c.status === 'confirmed' ? 'success' : c.status === 'proof_submitted' ? 'info' : 'warning'} size="sm">
                           {c.status === 'confirmed' ? 'Đã đóng' : 
                            c.status === 'proof_submitted' ? 'Chờ duyệt' : 'Chưa đóng'}
                         </Badge>
                       </td>
                       {isOwner && (
-                        <td>
+                        <td data-label="Hành động">
                           {c.status === 'proof_submitted' && (
                             <ConfirmPaymentButton contributionId={c.id} periodId={periodId} groupId={id} />
                           )}
@@ -544,11 +545,21 @@ export default async function PeriodDetailPage({
               <span className={styles.value}>{formatVND(period.payout_amount)}</span>
             </div>
             <div className={styles.infoRow}>
-              <span className={styles.label}>Hoa hồng:</span>
+              <Tooltip 
+                content="Số tiền trích lại cho chủ hụi (50% giá trị 1 phần hụi kỳ này)" 
+                position="top"
+              >
+                <span className={styles.label} style={{ cursor: 'help', borderBottom: '1px dotted var(--text-muted)' }}>Hoa hồng:</span>
+              </Tooltip>
               <span className={styles.value}>{formatVND(period.commission_amount)}</span>
             </div>
             <div className={styles.infoRow}>
-              <span className={styles.label}>Thực nhận:</span>
+              <Tooltip 
+                content="Tổng tiền trừ đi hoa hồng chủ hụi" 
+                position="bottom"
+              >
+                <span className={styles.label} style={{ cursor: 'help', borderBottom: '1px dotted var(--text-muted)' }}>Thực nhận:</span>
+              </Tooltip>
               <span className={styles.valueHighlight}>{formatVND(period.payout_amount - period.commission_amount)}</span>
             </div>
             <div className={styles.infoRow} style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px dashed var(--border-color)' }}>

@@ -4,6 +4,7 @@ import JoinByCode from './JoinByCode';
 import GroupListClient from './GroupListClient';
 import styles from './page.module.css';
 import { IconCycle } from '@/components/ui/Icons';
+import EmptyState from '@/components/ui/EmptyState';
 
 export const metadata = {
   title: 'Dây hụi',
@@ -28,18 +29,13 @@ export default async function HuiListPage() {
       </div>
 
       {groups.length === 0 ? (
-        <div className={styles.empty}>
-          <div className={styles.emptyIcon} style={{ color: 'var(--primary)' }}>
-            <IconCycle size={48} />
-          </div>
-          <h2>Chưa có dây hụi</h2>
-          <p>Tạo dây hụi đầu tiên hoặc tham gia bằng mã mời.</p>
-          <div className={styles.emptyActions}>
-            <Link href="/day-hui/tao-moi" className={styles.emptyBtn}>
-              Tạo dây hụi
-            </Link>
-          </div>
-        </div>
+        <EmptyState 
+          icon={<IconCycle size={48} />}
+          title="Chưa có dây hụi"
+          description="Tạo dây hụi đầu tiên hoặc tham gia bằng mã mời."
+          actionLabel="Tạo dây hụi"
+          actionHref="/day-hui/tao-moi"
+        />
       ) : (
         <GroupListClient groups={groups} />
       )}

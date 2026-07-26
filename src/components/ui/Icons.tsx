@@ -13,18 +13,18 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
 export const IconBrand = ({ size = SIZE, ...props }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
     {/* Shield outline */}
-    <path d="M12 2L4 6v5c0 5.25 3.4 10.15 8 11.25C16.6 21.15 20 16.25 20 11V6l-8-4z" stroke="#16A085" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    <path d="M12 2L4 6v5c0 5.25 3.4 10.15 8 11.25C16.6 21.15 20 16.25 20 11V6l-8-4z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
     {/* Rotation circle (dashed) */}
-    <circle cx="12" cy="12" r="5" stroke="#16A085" strokeWidth="1.2" strokeDasharray="4 2.5" fill="none" opacity="0.7" />
+    <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.2" strokeDasharray="4 2.5" fill="none" opacity="0.7" />
     {/* 4 Nodes on circle */}
-    <circle cx="12" cy="7" r="1.2" fill="#16A085" />
-    <circle cx="17" cy="12" r="1.2" fill="#16A085" />
-    <circle cx="12" cy="17" r="1.2" fill="#16A085" />
-    <circle cx="7" cy="12" r="1.2" fill="#16A085" />
+    <circle cx="12" cy="7" r="1.2" fill="currentColor" />
+    <circle cx="17" cy="12" r="1.2" fill="currentColor" />
+    <circle cx="12" cy="17" r="1.2" fill="currentColor" />
+    <circle cx="7" cy="12" r="1.2" fill="currentColor" />
     {/* T + checkmark at center */}
-    <path d="M10 10h4" stroke="#1ABC9C" strokeWidth="1.6" strokeLinecap="round" />
-    <path d="M12 10v3.5" stroke="#1ABC9C" strokeWidth="1.6" strokeLinecap="round" />
-    <path d="M12 13.5l1.5-1.5" stroke="#1ABC9C" strokeWidth="1.6" strokeLinecap="round" />
+    <path d="M10 10h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    <path d="M12 10v3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    <path d="M12 13.5l1.5-1.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
 );
 
@@ -115,8 +115,6 @@ export const IconNotification = ({ size = SIZE, ...props }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth={STROKE_WIDTH} strokeLinecap="round" strokeLinejoin="round" {...props}>
     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
     <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-    {/* Dot báo hiệu - Accent */}
-    <circle cx="19" cy="5" r="2" fill="var(--primary)" stroke="none" />
   </svg>
 );
 
@@ -501,5 +499,48 @@ export const IconDevice = ({ size = SIZE, ...props }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth={STROKE_WIDTH} strokeLinecap="round" strokeLinejoin="round" {...props}>
     <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
     <circle cx="12" cy="18" r="1" fill="var(--primary)" stroke="none" />
+  </svg>
+);
+
+// KPI Dashboard Icons
+export const IconTrendUp = ({ size = SIZE, ...props }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth={STROKE_WIDTH} strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+    <polyline points="16 7 22 7 22 13" />
+  </svg>
+);
+
+export const IconTrendDown = ({ size = SIZE, ...props }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth={STROKE_WIDTH} strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <polyline points="22 17 13.5 8.5 8.5 13.5 2 7" />
+    <polyline points="16 17 22 17 22 11" />
+  </svg>
+);
+
+export const IconCashOut = ({ size = SIZE, ...props }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth={STROKE_WIDTH} strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M12 2v14m0 0l-4-4m4 4l4-4" />
+    <path d="M2 20h20" />
+  </svg>
+);
+
+export const IconCashIn = ({ size = SIZE, ...props }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth={STROKE_WIDTH} strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M12 22V8m0 0l-4 4m4-4l4 4" />
+    <path d="M2 4h20" />
+  </svg>
+);
+
+export const IconChart = ({ size = SIZE, ...props }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth={STROKE_WIDTH} strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M18 20V10M12 20V4M6 20v-6" />
+  </svg>
+);
+
+export const IconDonut = ({ size = SIZE, ...props }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth={STROKE_WIDTH} strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2a10 10 0 0 1 8.66 5" stroke="var(--primary)" />
   </svg>
 );

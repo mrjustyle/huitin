@@ -7,19 +7,23 @@
   background: transparent;
   border: none;
   font-size: 1.25rem;
-  padding: 8px;
+  padding: 0;
+  width: 36px;
+  height: 36px;
   cursor: pointer;
   position: relative;
-  transition: transform 0.2s ease;
+  transition: background 0.15s, transform 0.15s, color 0.15s;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
 }
 
 .bellButton:hover {
   background: var(--bg-elevated);
   transform: scale(1.05);
+  color: var(--primary);
 }
 
 .badge {

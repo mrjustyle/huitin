@@ -134,7 +134,7 @@ export default function NotificationBell() {
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Thông báo"
         >
-          <IconNotification size={24} />
+          <IconNotification size={20} />
           {unreadCount > 0 && (
             <span className={styles.badge}>{unreadCount > 9 ? '9+' : unreadCount}</span>
           )}

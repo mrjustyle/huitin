@@ -90,7 +90,9 @@ export default function LandingPage() {
                   <div className={styles.mockDot} />
                 </div>
                 <div className={styles.mockQR}>
-                  <div className={styles.mockQRBox}>QR</div>
+                  <div className={styles.mockQRBox}>
+                    <IconQR size={56} opacity={0.4} />
+                  </div>
                   <div className={styles.mockQRLabel}>Quét để đóng hụi</div>
                 </div>
               </div>

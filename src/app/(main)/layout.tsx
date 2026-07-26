@@ -9,6 +9,7 @@ import ThemeToggle from '@/components/ui/ThemeToggle';
 import { NavItem } from './NavItem';
 import { IconBrand, IconHome, IconCycle, IconVerified, IconAccount, IconSecurity } from '@/components/ui/Icons';
 import ClientProviders from './ClientProviders';
+import InstallPWA from '@/components/ui/InstallPWA';
 
 export default async function MainLayout({
   children,
@@ -96,6 +97,8 @@ export default async function MainLayout({
         <NavItem href="/tai-khoan" icon={<IconAccount />} label="Tài khoản" mobile />
         {isAdmin && <NavItem href="/admin" icon={<IconSecurity />} label="Admin" mobile />}
       </nav>
+
+      <InstallPWA />
     </div>
   );
 }
