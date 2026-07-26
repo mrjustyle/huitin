@@ -1,0 +1,79 @@
+.loader {
+  padding: var(--space-4) 0;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.header {
+  margin-bottom: var(--space-6);
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Skeleton base */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary) 25%,
+    var(--bg-secondary) 50%,
+    var(--bg-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+.skTitle {
+  height: 28px;
+  width: 45%;
+  margin-bottom: var(--space-2);
+}
+
+.skSubtitle {
+  height: 16px;
+  width: 65%;
+}
+
+.skLabel {
+  height: 12px;
+  width: 50%;
+}
+
+.skValue {
+  height: 28px;
+  width: 40%;
+}
+
+.skLine {
+  height: 16px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

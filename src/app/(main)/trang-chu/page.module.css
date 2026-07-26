@@ -1,0 +1,500 @@
+.dashboard {
+  max-width: 900px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.header {
+  margin-bottom: var(--space-6);
+}
+
+.greeting {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.subtitle {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+}
+
+/* -------- Stats Cards -------- */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.statCard {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  transition: all var(--transition-base);
+  animation: fadeInUp 0.5s ease-out backwards;
+}
+
+.statCard:nth-child(2) { animation-delay: 0.1s; }
+.statCard:nth-child(3) { animation-delay: 0.2s; }
+
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-glow), 0 8px 30px rgba(0, 0, 0, 0.05);
+  border-color: var(--color-primary-300);
+}
+
+.statIcon {
+  font-size: 2rem;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-50);
+  border-radius: 50%;
+  flex-shrink: 0;
+  color: var(--text-primary);
+}
+
+.statValue {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-700);
+  line-height: 1.2;
+}
+
+.statLabel {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* -------- KYC Alert -------- */
+.alertCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: var(--gradient-brand-subtle);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-6);
+  transition: all var(--transition-fast);
+  animation: fadeInUp 0.4s ease-out 0.2s backwards;
+}
+
+.alertCard:hover {
+  box-shadow: var(--shadow-glow);
+  border-color: var(--color-primary-300);
+}
+
+.alertIcon {
+  font-size: 1.75rem;
+  flex-shrink: 0;
+  color: var(--text-primary);
+}
+
+.alertContent {
+  flex: 1;
+}
+
+.alertTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-700);
+  margin-bottom: 2px;
+}
+
+.alertDesc {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.alertArrow {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary-500);
+  font-weight: var(--font-weight-bold);
+}
+
+/* -------- Action Center -------- */
+.actionCenter {
+  margin-bottom: var(--space-8);
+  animation: fadeInUp 0.4s ease-out 0.15s backwards;
+}
+
+.tasksList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.taskCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.taskCard:hover {
+  border-color: var(--color-primary-300);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.taskIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.taskInfo {
+  flex: 1;
+}
+
+.taskTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.taskDesc {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.taskAction {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* -------- Quick Actions -------- */
+.quickActions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.actionCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-base);
+  animation: fadeInUp 0.4s ease-out backwards;
+}
+
+.actionCard:nth-child(1) { animation-delay: 0.25s; }
+.actionCard:nth-child(2) { animation-delay: 0.3s; }
+
+.actionCard:hover {
+  border-color: var(--color-primary-300);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.actionIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.actionIconPrimary {
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
+
+.actionIconTeal {
+  background: var(--color-primary-100);
+  color: var(--color-primary-700);
+}
+
+.actionTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.actionDesc {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+/* -------- VIP Banner -------- */
+.vipBanner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: linear-gradient(135deg, rgba(22, 160, 133, 0.08), rgba(142, 68, 173, 0.06));
+  border: 1px solid rgba(22, 160, 133, 0.2);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-8);
+  transition: all var(--transition-fast);
+  animation: fadeInUp 0.4s ease-out 0.3s backwards;
+}
+
+.vipBanner:hover {
+  border-color: rgba(22, 160, 133, 0.4);
+  box-shadow: 0 4px 20px rgba(22, 160, 133, 0.1);
+  transform: translateY(-2px);
+}
+
+.vipBannerIcon {
+  font-size: 1.75rem;
+  flex-shrink: 0;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.vipBannerContent {
+  flex: 1;
+}
+
+.vipBannerTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-700);
+  margin-bottom: 2px;
+}
+
+.vipBannerDesc {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.vipBannerArrow {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary-500);
+  font-weight: var(--font-weight-bold);
+}
+
+/* -------- Charts Grid -------- */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+  animation: fadeInUp 0.4s ease-out 0.3s backwards;
+}
+
+@media (max-width: 768px) {
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* -------- Groups Section -------- */
+.groupsSection {
+  animation: fadeInUp 0.4s ease-out 0.35s backwards;
+}
+
+.sectionTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.groupsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.groupItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.groupItem:hover {
+  border-color: var(--color-primary-300);
+  box-shadow: var(--shadow-sm);
+}
+
+.groupInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.groupName {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.nameText {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kycStamp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--primary-color, #10b981);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid var(--primary-color, #10b981);
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.groupProgressSegments {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  display: flex;
+  gap: 2px;
+}
+
+.progressSegment {
+  flex: 1;
+  height: 100%;
+  background-color: var(--bg-tertiary, #e2e8f0);
+}
+
+.progressSegment.filled {
+  background-color: var(--primary-color, #10b981);
+}
+
+.groupMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.groupValue {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-600);
+  white-space: nowrap;
+}
+
+.groupRole {
+  font-size: 1rem;
+}
+
+.viewAll {
+  display: block;
+  text-align: center;
+  padding: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--text-link);
+  font-weight: var(--font-weight-medium);
+  margin-top: var(--space-3);
+  border-radius: var(--radius-lg);
+  transition: background var(--transition-fast);
+}
+
+.viewAll:hover {
+  background: var(--color-primary-50);
+}
+
+/* -------- Responsive -------- */
+@media (max-width: 768px) {
+  .statsRow {
+    grid-template-columns: 1fr;
+  }
+
+  .quickActions {
+    grid-template-columns: 1fr;
+  }
+
+  .greeting {
+    font-size: var(--font-size-xl);
+  }
+}
+
+/* -------- Dark mode -------- */
+@media (prefers-color-scheme: dark) {
+  .statCard,
+  .actionCard,
+  .groupItem {
+    border-color: var(--border-color);
+  }
+
+  .alertCard {
+    background: rgba(22, 160, 133, 0.08); /* Dark mode translucent */
+    border-color: var(--border-color);
+  }
+
+  .statIcon {
+    background: rgba(22, 160, 133, 0.15); /* Dark mode translucent green */
+  }
+
+  .actionIconPrimary {
+    background: rgba(22, 160, 133, 0.15);
+  }
+
+  .actionIconTeal {
+    background: rgba(8, 127, 108, 0.2);
+  }
+
+  .alertTitle {
+    color: var(--primary-bright);
+  }
+
+  .groupValue {
+    color: var(--primary-bright);
+  }
+
+  .viewAll:hover {
+    background: rgba(34, 199, 169, 0.1);
+  }
+}

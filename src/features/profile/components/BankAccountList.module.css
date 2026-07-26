@@ -1,0 +1,203 @@
+.wrapper {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.empty {
+  padding: var(--space-10) var(--space-6);
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.emptyIcon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-3);
+  color: var(--text-tertiary);
+}
+
+.emptyHint {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-top: var(--space-1);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.bankCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--border-color);
+  transition: background var(--transition-fast);
+}
+
+.bankCard:last-child {
+  border-bottom: none;
+}
+
+.bankCard:hover {
+  background: var(--bg-tertiary);
+}
+
+.bankInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
+}
+
+/* Bank Logo */
+.bankLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+}
+
+.bankLogoImg {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+}
+
+.bankLogoFallback {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-600);
+  background: var(--color-primary-50);
+}
+
+.bankDetails {
+  flex: 1;
+  min-width: 0;
+}
+
+.bankName {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.accountNum {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-money);
+  letter-spacing: 0.05em;
+  margin-top: 1px;
+}
+
+.accountName {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-top: 1px;
+}
+
+/* Action buttons */
+.bankActions {
+  display: flex;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.actionBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  color: var(--text-tertiary);
+}
+
+.actionBtn:hover {
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
+
+.deleteBtn:hover {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+/* Add Form */
+.addForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.alert {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-error-light);
+  color: #B91C1C;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+}
+
+.selectWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.selectLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.addFormActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .wrapper { border-color: var(--border-color); }
+  .header { border-bottom-color: var(--border-color); }
+  .bankCard { border-bottom-color: var(--border-color); }
+  .bankCard:hover { background: var(--bg-tertiary); }
+  .actionBtn:hover { background: rgba(34, 199, 169, 0.1); color: var(--primary-bright); }
+  .deleteBtn:hover { background: rgba(239, 68, 68, 0.15); color: var(--color-error); }
+  .bankLogo { background: rgba(255, 255, 255, 0.95); border-color: var(--border-color); }
+}
+
+:root[data-theme="dark"] {
+  .bankLogo { background: rgba(255, 255, 255, 0.95); }
+}

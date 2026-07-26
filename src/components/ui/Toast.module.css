@@ -1,0 +1,93 @@
+.container {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 400px;
+  width: 100%;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--bg-secondary);
+  box-shadow: var(--shadow-lg);
+  border-left: 4px solid;
+  animation: slideIn 0.3s ease-out;
+  pointer-events: all;
+}
+
+.success { border-left-color: var(--color-success); }
+.error { border-left-color: var(--color-error); }
+.warning { border-left-color: var(--color-warning); }
+.info { border-left-color: var(--color-info); }
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+}
+
+.success .iconWrap { background: var(--color-success-light); color: #15803D; }
+.error .iconWrap { background: var(--color-error-light); color: #B91C1C; }
+.warning .iconWrap { background: var(--color-warning-light); color: #92400E; }
+.info .iconWrap { background: var(--color-info-light); color: #1D4ED8; }
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.message {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.close {
+  color: var(--text-tertiary);
+  font-size: var(--font-size-xs);
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.close:hover {
+  background: var(--color-gray-100);
+  color: var(--text-primary);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Mobile: bottom center */
+@media (max-width: 640px) {
+  .container {
+    left: var(--space-4);
+    right: var(--space-4);
+    bottom: calc(var(--bottom-nav-height) + var(--space-4));
+    max-width: none;
+  }
+}

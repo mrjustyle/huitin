@@ -1,0 +1,167 @@
+.panel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+/* Create form */
+.createForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+  animation: fadeInDown 0.2s ease-out;
+}
+
+.select, .textarea, .dateInput {
+  width: 100%;
+  padding: var(--space-3);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-family: inherit;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.deadlineRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.deadlineRow label {
+  white-space: nowrap;
+  font-weight: var(--font-weight-medium);
+}
+
+.dateInput {
+  flex: 1;
+}
+
+/* Vote list */
+.empty {
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+  padding: var(--space-6) 0;
+}
+
+.voteList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.voteItem {
+  padding: var(--space-4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: var(--bg-primary);
+  transition: border-color var(--transition-fast);
+}
+
+.voteItem:hover {
+  border-color: var(--color-primary-300);
+}
+
+.voteHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.voteType {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+}
+
+.voteStatus {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.voteDesc {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin-bottom: var(--space-3);
+}
+
+/* Progress */
+.progressWrap {
+  margin-bottom: var(--space-3);
+}
+
+.progressBar {
+  height: 6px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-1);
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--gradient-brand);
+  border-radius: var(--radius-full);
+  transition: width 0.5s ease;
+  min-width: 2px;
+}
+
+.progressLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.voteMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-3);
+}
+
+/* Actions */
+.voteActions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.myVoteLabel {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

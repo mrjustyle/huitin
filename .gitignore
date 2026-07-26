@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# capacitor native (auto-generated)
+/android/
+/ios/
+*.log
+*.sql
+*.mjs
+query.sh

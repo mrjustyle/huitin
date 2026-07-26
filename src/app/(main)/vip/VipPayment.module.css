@@ -1,0 +1,195 @@
+/* ── Payment Section ── */
+.paymentSection {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid var(--border-color);
+  margin-bottom: 2rem;
+}
+
+.paymentTitle {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.paymentDesc {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+/* ── Plan Selector ── */
+.planSelector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.planBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 1.25rem 1rem;
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.planBtn:hover {
+  border-color: var(--color-primary-300);
+}
+
+.planBtnActive {
+  border-color: var(--color-primary-500);
+  background: rgba(22, 160, 133, 0.05);
+  box-shadow: 0 0 0 1px var(--color-primary-500);
+}
+
+.planBadge {
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.planLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.planPrice {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-primary-600);
+  font-family: var(--font-money);
+}
+
+.planOriginal {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.planPeriod {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* ── Payment Grid ── */
+.paymentGrid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 640px) {
+  .paymentGrid {
+    grid-template-columns: 1fr;
+  }
+  .planSelector {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── QR Section ── */
+.qrSection {
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Transfer Info ── */
+.transferInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.transferTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.infoRow:last-of-type {
+  border-bottom: none;
+}
+
+.infoLabel {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.infoValue {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: right;
+}
+
+.infoValueMono {
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+}
+
+.infoValueHighlight {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-primary-600);
+  font-family: var(--font-money);
+}
+
+.infoValueCode {
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+  color: var(--color-primary-600);
+  background: rgba(22, 160, 133, 0.08);
+  padding: 2px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(22, 160, 133, 0.2);
+  letter-spacing: 0.5px;
+}
+
+/* ── Note ── */
+.note {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(22, 160, 133, 0.06);
+  border-radius: 10px;
+  border: 1px solid rgba(22, 160, 133, 0.12);
+}
+
+.note p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0;
+  line-height: 1.5;
+}
