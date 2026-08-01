@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { redirect } from 'next/navigation';
 
 export type AuthState = {
@@ -18,32 +19,140 @@ function formatPhone(p: string) {
 
 export async function sendPhoneOTP(phone: string) {
   const formattedPhone = formatPhone(phone);
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithOtp({
-    phone: formattedPhone,
-  });
+  
+  const supabaseAdmin = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  );
 
-  if (error) {
-    console.error('Send OTP Error:', error);
-    throw new Error(error.message || 'Không thể gửi mã OTP, vui lòng kiểm tra lại số điện thoại.');
+  // Check if it's a test phone number to bypass SMS API
+  const testPhones = (process.env.TEST_PHONE_NUMBERS || '').split(',').map(p => p.trim() ? formatPhone(p.trim()) : '');
+  const isTestPhone = testPhones.includes(formattedPhone);
+
+  // 1. Generate 6-digit OTP (Hardcode to 123456 for test numbers)
+  const otp = isTestPhone ? '123456' : Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes
+
+  // 2. Save OTP to DB
+  const { error: dbError } = await supabaseAdmin
+    .from('auth_otps')
+    .upsert({ phone: formattedPhone, otp, expires_at: expiresAt });
+
+  if (dbError) {
+    console.error('Lỗi lưu OTP:', dbError);
+    throw new Error('Lỗi hệ thống khi tạo OTP');
+  }
+
+  if (isTestPhone) {
+    console.log(`[TEST MODE] Bỏ qua gọi API SpeedSMS cho số ${formattedPhone}. Mã OTP là: ${otp}`);
+    return true;
+  }
+
+  // 3. Send SMS via SpeedSMS
+  const smsToken = process.env.SPEEDSMS_API_TOKEN;
+  if (!smsToken) throw new Error('Chưa cấu hình SpeedSMS Token');
+
+  let speedPhone = formattedPhone.replace('+', '');
+  
+  // LOG OTP CHO MỤC ĐÍCH TESTING
+  console.log('\n\n=========================================');
+  console.log(`MÃ SMS OTP CỦA SĐT ${speedPhone} LÀ: ${otp}`);
+  console.log('=========================================\n\n');
+
+  try {
+    const res = await fetch('https://api.speedsms.vn/index.php/sms/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + Buffer.from(smsToken + ':x').toString('base64')
+      },
+      body: JSON.stringify({
+        to: speedPhone,
+        content: `Ma xac thuc HUI TIN cua ban la: ${otp}. Vui long khong chia se ma nay cho bat ky ai.`,
+        sms_type: 4, 
+        sender: 'Verify'
+      })
+    });
+
+    const speedData = await res.json();
+    if (speedData.status !== 'success') {
+      console.error('SpeedSMS Error:', speedData);
+      // KHÔNG ném lỗi để dev có thể test OTP qua console
+      console.warn('CẢNH BÁO: SpeedSMS gửi lỗi nhưng vẫn cho phép test qua Console.');
+    }
+  } catch (err) {
+    console.error('Lỗi gọi API SpeedSMS:', err);
   }
   return true;
 }
 
 export async function verifyPhoneOTP(phone: string, otp: string) {
   const formattedPhone = formatPhone(phone);
-  const supabase = await createClient();
-  const { error, data } = await supabase.auth.verifyOtp({
-    phone: formattedPhone,
-    token: otp,
-    type: 'sms',
-  });
+  
+  const supabaseAdmin = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  );
 
-  if (error) {
-    console.error('Verify OTP Error:', error);
+  // 1. Check OTP in DB
+  const { data: otpRecords, error: fetchError } = await supabaseAdmin
+    .from('auth_otps')
+    .select('*')
+    .eq('phone', formattedPhone)
+    .eq('otp', otp)
+    .gte('expires_at', new Date().toISOString());
+
+  if (fetchError || !otpRecords || otpRecords.length === 0) {
     throw new Error('Mã OTP không hợp lệ hoặc đã hết hạn.');
   }
-  return data;
+
+  // Delete the used OTP
+  await supabaseAdmin.from('auth_otps').delete().eq('id', otpRecords[0].id);
+
+  // 2. Find or create user via Admin API
+  const { data: usersData } = await supabaseAdmin.auth.admin.listUsers();
+  
+  // Supabase returns phone WITHOUT the plus sign, so we need to compare safely
+  const searchPhone = formattedPhone.replace('+', '');
+  let user = usersData.users.find((u) => u.phone === searchPhone);
+  
+  const hiddenEmail = `${searchPhone}@sms.huitin.com`;
+
+  if (!user) {
+    const { data: newUserRes, error: createError } = await supabaseAdmin.auth.admin.createUser({
+      email: hiddenEmail,
+      email_confirm: true,
+      phone: formattedPhone,
+      phone_confirm: true,
+    });
+    if (createError) throw createError;
+    user = newUserRes.user;
+  } else {
+    // Ensure hidden email exists for magic link
+    if (!user.email) {
+      await supabaseAdmin.auth.admin.updateUserById(user.id, {
+        email: hiddenEmail,
+        email_confirm: true
+      });
+      user.email = hiddenEmail;
+    }
+  }
+
+  // 3. Generate Magic Link to issue session token
+  const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+    type: 'magiclink',
+    email: user.email!,
+  });
+
+  if (linkError) {
+    console.error('Magic Link Error:', linkError);
+    throw new Error('Lỗi cấp quyền đăng nhập');
+  }
+
+  // Chuyển hướng người dùng đến Magic Link (đăng nhập tự động)
+  redirect(linkData.properties.action_link);
 }
 
 export async function setPhonePin(prevState: AuthState, formData: FormData): Promise<AuthState> {
@@ -219,34 +328,123 @@ export async function resetPassword(prevState: AuthState, formData: FormData): P
 }
 
 export async function linkPhone(phone: string) {
-  const supabase = await createClient();
   const formattedPhone = formatPhone(phone);
   
-  const { error } = await supabase.auth.updateUser({ phone: formattedPhone });
+  const supabaseAdmin = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  );
+
+  // Check if phone already registered by another user
+  const { data: usersData } = await supabaseAdmin.auth.admin.listUsers();
   
-  if (error) {
-    if (error.message.includes('already registered')) {
-      throw new Error('Số điện thoại này đã có tài khoản trên Hụi Tín. Vui lòng đăng xuất và đăng nhập bằng Số điện thoại!');
+  // Supabase returns phone WITHOUT the plus sign, so we need to compare safely
+  const searchPhone = formattedPhone.replace('+', '');
+  const existingUser = usersData.users.find(u => u.phone === searchPhone);
+  
+  if (existingUser) {
+    throw new Error('Số điện thoại này đã có tài khoản trên Hụi Tín. Vui lòng đăng xuất và đăng nhập bằng Số điện thoại!');
+  }
+
+  // Check if it's a test phone number to bypass SMS API
+  const testPhones = (process.env.TEST_PHONE_NUMBERS || '').split(',').map(p => p.trim() ? formatPhone(p.trim()) : '');
+  const isTestPhone = testPhones.includes(formattedPhone);
+
+  // 1. Generate 6-digit OTP
+  const otp = isTestPhone ? '123456' : Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes
+
+  // 2. Save OTP to DB
+  const { error: dbError } = await supabaseAdmin
+    .from('auth_otps')
+    .upsert({ phone: formattedPhone, otp, expires_at: expiresAt });
+
+  if (dbError) {
+    console.error('Lỗi lưu OTP:', dbError);
+    throw new Error('Lỗi hệ thống khi tạo OTP');
+  }
+  
+  if (isTestPhone) {
+    console.log(`[TEST MODE] Bỏ qua gọi API SpeedSMS cho số ${formattedPhone}. Mã OTP là: ${otp}`);
+    return true;
+  }
+
+  // 3. Send SMS via SpeedSMS
+  const smsToken = process.env.SPEEDSMS_API_TOKEN;
+  if (!smsToken) throw new Error('Chưa cấu hình SpeedSMS Token');
+
+  let speedPhone = formattedPhone.replace('+', '');
+  
+  // LOG OTP CHO MỤC ĐÍCH TESTING
+  console.log('\n\n=========================================');
+  console.log(`MÃ LINK PHONE OTP CỦA SĐT ${speedPhone} LÀ: ${otp}`);
+  console.log('=========================================\n\n');
+
+  try {
+    const res = await fetch('https://api.speedsms.vn/index.php/sms/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + Buffer.from(smsToken + ':x').toString('base64')
+      },
+      body: JSON.stringify({
+        to: speedPhone,
+        content: `Ma xac thuc HUI TIN cua ban la: ${otp}. Vui long khong chia se ma nay cho bat ky ai.`,
+        sms_type: 4, 
+        sender: 'Verify'
+      })
+    });
+
+    const speedData = await res.json();
+    if (speedData.status !== 'success') {
+      console.error('SpeedSMS Error:', speedData);
+      console.warn('CẢNH BÁO: SpeedSMS gửi lỗi nhưng vẫn cho phép test qua Console.');
     }
-    throw new Error(error.message);
+  } catch (err) {
+    console.error('Lỗi gọi API SpeedSMS:', err);
   }
   
   return true;
 }
 
 export async function verifyLinkPhoneOTP(phone: string, otp: string) {
-  const supabase = await createClient();
+  const supabaseUser = await createClient(); // Get current user session
+  const { data: { user } } = await supabaseUser.auth.getUser();
+  if (!user) throw new Error('Bạn chưa đăng nhập');
+
+  const supabaseAdmin = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  );
+
   const formattedPhone = formatPhone(phone);
   
-  const { error, data } = await supabase.auth.verifyOtp({
-    phone: formattedPhone,
-    token: otp,
-    type: 'phone_change',
-  });
-  
-  if (error) {
+  // 1. Check OTP in DB
+  const { data: otpRecords, error: fetchError } = await supabaseAdmin
+    .from('auth_otps')
+    .select('*')
+    .eq('phone', formattedPhone)
+    .eq('otp', otp)
+    .gte('expires_at', new Date().toISOString());
+
+  if (fetchError || !otpRecords || otpRecords.length === 0) {
     throw new Error('Mã OTP không hợp lệ hoặc đã hết hạn.');
   }
+
+  // Delete the used OTP
+  await supabaseAdmin.from('auth_otps').delete().eq('id', otpRecords[0].id);
   
-  return data;
+  // 2. Update user phone using Admin API to bypass OTP check
+  const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
+    phone: formattedPhone,
+    phone_confirm: true
+  });
+
+  if (updateError) {
+    throw new Error('Lỗi liên kết số điện thoại: ' + updateError.message);
+  }
+  
+  return { success: true };
 }

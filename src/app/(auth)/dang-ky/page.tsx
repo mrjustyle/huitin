@@ -148,7 +148,7 @@ export default function SignupPage() {
             required
             autoComplete="one-time-code"
             maxLength={6}
-            style={{ letterSpacing: '0.5em', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold' }}
+            style={{ letterSpacing: otp ? '0.5em' : 'normal', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold' }}
           />
 
           <Button type="submit" fullWidth loading={loading} size="lg" style={{ marginTop: '16px' }}>
