@@ -262,3 +262,54 @@
   outline: none;
   border-color: var(--primary);
 }
+
+/* ---- Responsive (Mobile) ---- */
+@media (max-width: 768px) {
+  .adminShell {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 12px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .brand {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding: 8px 16px 8px 0;
+    border-right: 1px solid var(--border-color);
+    margin-right: 12px;
+  }
+  
+  .nav {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .navLink {
+    white-space: nowrap;
+    padding: 8px 12px;
+  }
+  
+  .navDivider {
+    display: none;
+  }
+  
+  .content {
+    padding: 16px;
+  }
+  
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+

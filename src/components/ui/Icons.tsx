@@ -11,20 +11,23 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
 // 1. Biểu tượng thương hiệu (Brand / Hụi Tín Logo)
 // Một vòng tròn đại diện cho vòng hụi. Nhiều điểm nhỏ đại diện cho các thành viên kết nối theo chu kỳ. Chữ T cách điệu (hoặc Check) ở trung tâm.
 export const IconBrand = ({ size = SIZE, ...props }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-    {/* Shield outline */}
-    <path d="M12 2L4 6v5c0 5.25 3.4 10.15 8 11.25C16.6 21.15 20 16.25 20 11V6l-8-4z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-    {/* Rotation circle (dashed) */}
-    <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.2" strokeDasharray="4 2.5" fill="none" opacity="0.7" />
-    {/* 4 Nodes on circle */}
-    <circle cx="12" cy="7" r="1.2" fill="currentColor" />
-    <circle cx="17" cy="12" r="1.2" fill="currentColor" />
-    <circle cx="12" cy="17" r="1.2" fill="currentColor" />
-    <circle cx="7" cy="12" r="1.2" fill="currentColor" />
-    {/* T + checkmark at center */}
-    <path d="M10 10h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    <path d="M12 10v3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    <path d="M12 13.5l1.5-1.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth={STROKE_WIDTH} strokeLinecap="round" strokeLinejoin="round" {...props}>
+    {/* Outer circle representing the Trust Circle */}
+    <circle cx="12" cy="12" r="9" />
+    {/* Nodes on the circle (8 nodes for 8 points) */}
+    <circle cx="12" cy="3" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="18.36" cy="5.64" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="21" cy="12" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="18.36" cy="18.36" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="21" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="5.64" cy="18.36" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="3" cy="12" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="5.64" cy="5.64" r="1.5" fill="currentColor" stroke="none" />
+    
+    {/* The elegant 'T' in the center */}
+    <path d="M8 9h8" strokeWidth="2" />
+    <path d="M12 9v7" strokeWidth="2" />
+    <path d="M12 16h1.5" strokeWidth="2" /> 
   </svg>
 );
 
