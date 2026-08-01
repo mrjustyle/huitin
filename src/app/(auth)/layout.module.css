@@ -41,12 +41,42 @@
   letter-spacing: -0.02em;
 }
 
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--color-primary-800);
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.badgeDot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-primary-500);
+  border-radius: 50%;
+}
+
 .tagline {
-  font-size: var(--font-size-xl);
-  color: rgba(255, 255, 255, 0.85);
-  line-height: var(--line-height-relaxed);
+  font-size: 2.75rem;
+  color: white;
+  line-height: 1.15;
   margin-bottom: var(--space-10);
-  font-weight: var(--font-weight-light);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-family: var(--font-heading);
+}
+
+.highlight {
+  background: linear-gradient(135deg, #6ADCC3 0%, #FCD34D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .features {

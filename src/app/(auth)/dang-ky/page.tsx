@@ -168,6 +168,7 @@ export default function SignupPage() {
       ) : (
         <form action={action} className={styles.form}>
           <input type="hidden" name="fullName" value={fullName} />
+          <input type="hidden" name="phone" value={phone} />
 
           <Input
             label="Tạo Mã PIN (6 số)"

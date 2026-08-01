@@ -17,7 +17,8 @@ export default function AuthLayout({
             <h1 className={styles.brandName}>Hụi Tín</h1>
           </div>
           <p className={styles.tagline}>
-            Góp rõ ràng.<br />Giữ trọn chữ tín.
+            Góp rõ ràng.<br />
+            Giữ trọn <span className={styles.highlight}>chữ tín.</span>
           </p>
           <div className={styles.features}>
             <div className={styles.feature}>

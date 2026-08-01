@@ -3,7 +3,7 @@
    "Góp rõ ràng. Giữ trọn chữ tín."
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
 
 /* ---------- CSS Reset ---------- */
 *,
@@ -83,7 +83,7 @@
   --text-muted: #819892;
 
   /* Typography — Font Families */
-  --font-heading: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-money: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-family: var(--font-body);

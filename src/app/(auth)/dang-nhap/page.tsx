@@ -28,7 +28,7 @@ export default function LoginPage() {
         <h2 className={styles.title}>Đăng nhập</h2>
         <p className={styles.subtitle}>
           {step === 'phone' ? 'Chào mừng quay lại Hụi Tín' 
-            : `Nhập mã OTP gửi tới ${phone}`}
+            : `Vui lòng nhập Mã PIN của bạn`}
         </p>
       </div>
 

@@ -19,7 +19,7 @@ function formatPhone(p: string) {
 
 export async function sendPhoneOTP(phone: string) {
   const formattedPhone = formatPhone(phone);
-  
+
   const supabaseAdmin = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -55,7 +55,7 @@ export async function sendPhoneOTP(phone: string) {
   if (!smsToken) throw new Error('Chưa cấu hình SpeedSMS Token');
 
   let speedPhone = formattedPhone.replace('+', '');
-  
+
   // LOG OTP CHO MỤC ĐÍCH TESTING
   console.log('\n\n=========================================');
   console.log(`MÃ SMS OTP CỦA SĐT ${speedPhone} LÀ: ${otp}`);
@@ -71,7 +71,7 @@ export async function sendPhoneOTP(phone: string) {
       body: JSON.stringify({
         to: speedPhone,
         content: `Ma xac thuc HUI TIN cua ban la: ${otp}. Vui long khong chia se ma nay cho bat ky ai.`,
-        sms_type: 4, 
+        sms_type: 4,
         sender: 'Verify'
       })
     });
@@ -90,7 +90,7 @@ export async function sendPhoneOTP(phone: string) {
 
 export async function verifyPhoneOTP(phone: string, otp: string) {
   const formattedPhone = formatPhone(phone);
-  
+
   const supabaseAdmin = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -114,11 +114,11 @@ export async function verifyPhoneOTP(phone: string, otp: string) {
 
   // 2. Find or create user via Admin API
   const { data: usersData } = await supabaseAdmin.auth.admin.listUsers();
-  
+
   // Supabase returns phone WITHOUT the plus sign, so we need to compare safely
   const searchPhone = formattedPhone.replace('+', '');
   let user = usersData.users.find((u) => u.phone === searchPhone);
-  
+
   const hiddenEmail = `${searchPhone}@sms.huitin.com`;
 
   if (!user) {
@@ -141,24 +141,15 @@ export async function verifyPhoneOTP(phone: string, otp: string) {
     }
   }
 
-  // 3. Generate Magic Link to issue session token
-  const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
-    type: 'magiclink',
-    email: user.email!,
-  });
-
-  if (linkError) {
-    console.error('Magic Link Error:', linkError);
-    throw new Error('Lỗi cấp quyền đăng nhập');
-  }
-
-  // Chuyển hướng người dùng đến Magic Link (đăng nhập tự động)
-  redirect(linkData.properties.action_link);
+  // Bỏ qua tạo Magic Link. Đăng nhập sẽ thực hiện sau khi user thiết lập mã PIN.
+  return { success: true };
 }
 
 export async function setPhonePin(prevState: AuthState, formData: FormData): Promise<AuthState> {
   const rawPassword = formData.get('password') as string;
   const fullName = formData.get('fullName') as string;
+
+  const phone = formData.get('phone') as string;
 
   if (!rawPassword) {
     return { error: 'Vui lòng nhập Mã PIN' };
@@ -168,17 +159,51 @@ export async function setPhonePin(prevState: AuthState, formData: FormData): Pro
     return { error: 'Mã PIN phải có đủ 6 số' };
   }
 
-  const password = rawPassword + 'Huitin@2026';
-  const supabase = await createClient();
+  if (!phone) {
+    return { error: 'Lỗi: Không tìm thấy số điện thoại' };
+  }
 
-  const { error } = await supabase.auth.updateUser({
+  const password = rawPassword + 'Huitin@2026';
+
+  const supabaseAdmin = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  );
+
+  const formattedPhone = formatPhone(phone);
+  const searchPhone = formattedPhone.replace('+', '');
+
+  // Find user by phone
+  const { data: usersData } = await supabaseAdmin.auth.admin.listUsers();
+  const user = usersData.users.find((u) => u.phone === searchPhone);
+
+  if (!user) {
+    return { error: 'Không tìm thấy tài khoản người dùng' };
+  }
+
+  // Set password via admin API
+  const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
     password,
-    data: fullName ? { full_name: fullName } : undefined,
+    user_metadata: { ...user.user_metadata, full_name: fullName || user.user_metadata.full_name }
   });
 
-  if (error) {
-    console.error('Set PIN Error:', error);
+  if (updateError) {
+    console.error('Set PIN Error:', updateError);
     return { error: 'Không thể thiết lập Mã PIN, vui lòng thử lại.' };
+  }
+
+  // Log them in using client API (to set cookies)
+  const supabase = await createClient();
+  const hiddenEmail = `${searchPhone}@sms.huitin.com`;
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: hiddenEmail,
+    password,
+  });
+
+  if (signInError) {
+    console.error('Login after PIN Error:', signInError);
+    return { error: 'Tạo mã PIN thành công nhưng lỗi tự động đăng nhập. Vui lòng thử đăng nhập lại.' };
   }
 
   return { success: true };
@@ -270,13 +295,13 @@ export async function forgotPassword(prevState: AuthState, formData: FormData): 
 
 export async function signInWithGoogle(formData?: FormData) {
   const supabase = await createClient();
-  
+
   // Dynamically determine origin from request headers
   const { headers } = await import('next/headers');
   const headerStore = await headers();
-  const origin = headerStore.get('origin') 
+  const origin = headerStore.get('origin')
     || headerStore.get('x-forwarded-host') && `https://${headerStore.get('x-forwarded-host')}`
-    || process.env.NEXT_PUBLIC_APP_URL 
+    || process.env.NEXT_PUBLIC_APP_URL
     || 'http://localhost:3000';
 
   const { data, error } = await supabase.auth.signInWithOAuth({
@@ -330,7 +355,7 @@ export async function resetPassword(prevState: AuthState, formData: FormData): P
 
 export async function linkPhone(phone: string) {
   const formattedPhone = formatPhone(phone);
-  
+
   const supabaseAdmin = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -339,11 +364,11 @@ export async function linkPhone(phone: string) {
 
   // Check if phone already registered by another user
   const { data: usersData } = await supabaseAdmin.auth.admin.listUsers();
-  
+
   // Supabase returns phone WITHOUT the plus sign, so we need to compare safely
   const searchPhone = formattedPhone.replace('+', '');
   const existingUser = usersData.users.find(u => u.phone === searchPhone);
-  
+
   if (existingUser) {
     throw new Error('Số điện thoại này đã có tài khoản trên Hụi Tín. Vui lòng đăng xuất và đăng nhập bằng Số điện thoại!');
   }
@@ -366,7 +391,7 @@ export async function linkPhone(phone: string) {
     console.error('Lỗi lưu OTP:', dbError);
     throw new Error('Lỗi hệ thống khi tạo OTP');
   }
-  
+
   if (isTestPhone) {
     console.log(`[TEST MODE] Bỏ qua gọi API SpeedSMS cho số ${formattedPhone}. Mã OTP là: ${otp}`);
     return true;
@@ -377,7 +402,7 @@ export async function linkPhone(phone: string) {
   if (!smsToken) throw new Error('Chưa cấu hình SpeedSMS Token');
 
   let speedPhone = formattedPhone.replace('+', '');
-  
+
   // LOG OTP CHO MỤC ĐÍCH TESTING
   console.log('\n\n=========================================');
   console.log(`MÃ LINK PHONE OTP CỦA SĐT ${speedPhone} LÀ: ${otp}`);
@@ -393,7 +418,7 @@ export async function linkPhone(phone: string) {
       body: JSON.stringify({
         to: speedPhone,
         content: `Ma xac thuc HUI TIN cua ban la: ${otp}. Vui long khong chia se ma nay cho bat ky ai.`,
-        sms_type: 4, 
+        sms_type: 4,
         sender: 'Verify'
       })
     });
@@ -406,7 +431,7 @@ export async function linkPhone(phone: string) {
   } catch (err) {
     console.error('Lỗi gọi API SpeedSMS:', err);
   }
-  
+
   return true;
 }
 
@@ -422,7 +447,7 @@ export async function verifyLinkPhoneOTP(phone: string, otp: string) {
   );
 
   const formattedPhone = formatPhone(phone);
-  
+
   // 1. Check OTP in DB
   const { data: otpRecords, error: fetchError } = await supabaseAdmin
     .from('auth_otps')
@@ -437,7 +462,7 @@ export async function verifyLinkPhoneOTP(phone: string, otp: string) {
 
   // Delete the used OTP
   await supabaseAdmin.from('auth_otps').delete().eq('id', otpRecords[0].id);
-  
+
   // 2. Update user phone using Admin API to bypass OTP check
   const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
     phone: formattedPhone,
@@ -447,6 +472,6 @@ export async function verifyLinkPhoneOTP(phone: string, otp: string) {
   if (updateError) {
     throw new Error('Lỗi liên kết số điện thoại: ' + updateError.message);
   }
-  
+
   return { success: true };
 }
