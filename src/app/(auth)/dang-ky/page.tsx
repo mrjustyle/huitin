@@ -1,55 +1,83 @@
 'use client';
 
-import { useState } from 'react';
+import { useActionState, useState } from 'react';
 import Link from 'next/link';
+import { sendPhoneOTP, verifyPhoneOTP, setPhonePin } from '@/features/auth/actions';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import styles from '../dang-nhap/page.module.css';
 
 export default function SignupPage() {
-  const [step, setStep] = useState<'info' | 'otp'>('info');
+  const [step, setStep] = useState<'info' | 'otp' | 'pin'>('info');
   const [phone, setPhone] = useState('');
   const [fullName, setFullName] = useState('');
+  const [otp, setOtp] = useState('');
+  const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const [state, action, pending] = useActionState(setPhonePin, undefined);
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone || !fullName) return;
+    if (!agreed) {
+      setError('Vui lòng đồng ý với Điều khoản sử dụng');
+      return;
+    }
     setLoading(true);
     setError(null);
     
-    // Giả lập gửi OTP
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      await sendPhoneOTP(phone);
       setStep('otp');
-    }, 1000);
+    } catch (err: any) {
+      setError(err.message || 'Lỗi gửi OTP');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleVerifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!otp || otp.length !== 6) {
+      setError('Vui lòng nhập đủ 6 số OTP');
+      return;
+    }
+    
     setLoading(true);
     setError(null);
     
-    // Giả lập xác thực thành công chuyển về trang chủ
-    setTimeout(() => {
-      window.location.href = '/trang-chu';
-    }, 1000);
+    try {
+      await verifyPhoneOTP(phone, otp);
+      setStep('pin');
+    } catch (err: any) {
+      setError(err.message || 'Mã OTP không hợp lệ');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // Khi signUp thành công, chuyển hướng người dùng
+  if (state?.success) {
+    window.location.href = '/trang-chu';
+  }
 
   return (
     <div className={styles.page}>
       <div className={styles.header}>
         <h2 className={styles.title}>Đăng ký</h2>
         <p className={styles.subtitle}>
-          {step === 'info' ? 'Tạo tài khoản Hụi Tín miễn phí' : `Nhập mã OTP gửi tới ${phone}`}
+          {step === 'info' ? 'Tạo tài khoản Hụi Tín miễn phí' 
+            : step === 'otp' ? `Nhập mã OTP gửi tới ${phone}`
+            : 'Tạo Mã PIN 6 số để đăng nhập an toàn'}
         </p>
       </div>
 
-      {error && (
+      {(error || state?.error) && (
         <div className={styles.alert} role="alert">
           <span className={styles.alertIcon}>⚠</span>
-          {error}
+          {error || state?.error}
         </div>
       )}
 
@@ -77,7 +105,7 @@ export default function SignupPage() {
             name="phone"
             type="tel"
             inputMode="numeric"
-            placeholder="Ví dụ: 0912345678"
+            placeholder="Ví dụ: +84912345678"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             required
@@ -90,17 +118,23 @@ export default function SignupPage() {
           />
           
           <label className={styles.checkboxLabel} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginTop: '12px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-            <input type="checkbox" required style={{ marginTop: '2px' }} />
+            <input 
+              type="checkbox" 
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              required 
+              style={{ marginTop: '2px' }} 
+            />
             <span>
               Tôi đồng ý với <Link href="/dieu-khoan">Điều khoản dịch vụ</Link> và <Link href="/bao-mat">Chính sách bảo mật</Link> của Hụi Tín.
             </span>
           </label>
 
-          <Button type="submit" fullWidth loading={loading} size="lg" style={{ marginTop: '16px' }}>
+          <Button type="submit" fullWidth loading={loading} size="lg" style={{ marginTop: '16px' }} disabled={!agreed}>
             Đăng ký bằng SĐT
           </Button>
         </form>
-      ) : (
+      ) : step === 'otp' ? (
         <form onSubmit={handleVerifyOTP} className={styles.form}>
           <Input
             label="Mã xác thực (OTP)"
@@ -108,6 +142,8 @@ export default function SignupPage() {
             type="text"
             inputMode="numeric"
             placeholder="Nhập mã 6 số"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
             required
             autoComplete="one-time-code"
             maxLength={6}
@@ -115,7 +151,7 @@ export default function SignupPage() {
           />
 
           <Button type="submit" fullWidth loading={loading} size="lg" style={{ marginTop: '16px' }}>
-            Xác nhận
+            Xác nhận OTP
           </Button>
           
           <div style={{ textAlign: 'center', marginTop: '16px' }}>
@@ -128,7 +164,30 @@ export default function SignupPage() {
             </button>
           </div>
         </form>
+      ) : (
+        <form action={action} className={styles.form}>
+          <input type="hidden" name="fullName" value={fullName} />
+
+          <Input
+            label="Tạo Mã PIN (6 số)"
+            name="password"
+            type="password"
+            inputMode="numeric"
+            placeholder="••••••"
+            required
+            maxLength={6}
+            style={{ letterSpacing: '0.5em', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold' }}
+          />
+
+          <Button type="submit" fullWidth loading={pending} size="lg" style={{ marginTop: '16px' }}>
+            Hoàn tất Đăng ký
+          </Button>
+          <p style={{ textAlign: 'center', marginTop: '12px', fontSize: '13px', color: 'var(--text-tertiary)' }}>
+            Mã PIN này sẽ dùng để đăng nhập vào các lần sau.
+          </p>
+        </form>
       )}
+
 
       {step === 'info' && (
         <>
@@ -142,6 +201,15 @@ export default function SignupPage() {
               fullWidth
               size="lg"
               type="button"
+              onClick={() => {
+                const appId = process.env.NEXT_PUBLIC_ZALO_APP_ID;
+                if (!appId) {
+                  alert('Vui lòng cấu hình NEXT_PUBLIC_ZALO_APP_ID trong file .env.local');
+                  return;
+                }
+                const redirectUri = encodeURIComponent(`${window.location.origin}/api/auth/zalo/callback`);
+                window.location.href = `https://oauth.zaloapp.com/v4/permission?app_id=${appId}&redirect_uri=${redirectUri}&state=login`;
+              }}
               icon={
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM15.84 14.89L13.75 14.92V14.92L11.75 16.92V14.92H8.75C8.34 14.92 8 14.58 8 14.17V9.83C8 9.42 8.34 9.08 8.75 9.08H15.25C15.66 9.08 16 9.42 16 9.83V14.14C16 14.55 15.7 14.88 15.84 14.89ZM9.5 13.5H14.5V12.5H9.5V13.5ZM9.5 11.5H14.5V10.5H9.5V11.5Z" fill="#0068FF"/>
