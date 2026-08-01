@@ -35,9 +35,10 @@ export async function sendPhoneOTP(phone: string) {
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes
 
   // 2. Save OTP to DB
+  await supabaseAdmin.from('auth_otps').delete().eq('phone', formattedPhone);
   const { error: dbError } = await supabaseAdmin
     .from('auth_otps')
-    .upsert({ phone: formattedPhone, otp, expires_at: expiresAt });
+    .insert({ phone: formattedPhone, otp, expires_at: expiresAt });
 
   if (dbError) {
     console.error('Lỗi lưu OTP:', dbError);
@@ -356,9 +357,10 @@ export async function linkPhone(phone: string) {
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes
 
   // 2. Save OTP to DB
+  await supabaseAdmin.from('auth_otps').delete().eq('phone', formattedPhone);
   const { error: dbError } = await supabaseAdmin
     .from('auth_otps')
-    .upsert({ phone: formattedPhone, otp, expires_at: expiresAt });
+    .insert({ phone: formattedPhone, otp, expires_at: expiresAt });
 
   if (dbError) {
     console.error('Lỗi lưu OTP:', dbError);
