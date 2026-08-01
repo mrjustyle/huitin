@@ -41,6 +41,7 @@ export default async function AccountPage() {
         <div className={styles.leftCol}>
           <ProfileForm
             profile={{
+              nickname: profile?.nickname || profile?.full_name || '',
               fullName: profile?.full_name || '',
               phone: profile?.phone || '',
               email: user.email || '',
@@ -83,7 +84,9 @@ export default async function AccountPage() {
             <h3 className={styles.infoTitle}>Thông tin tài khoản</h3>
             <div className={styles.infoRow}>
               <span className={styles.infoLabel}>Email</span>
-              <span className={styles.infoValue}>{user.email}</span>
+              <span className={styles.infoValue}>
+                {user.email?.endsWith('@sms.huitin.com') ? `${profile?.phone || 'user'}@sohuitin.com` : user.email}
+              </span>
             </div>
             <div className={styles.infoRow}>
               <span className={styles.infoLabel}>ID</span>

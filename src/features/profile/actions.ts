@@ -14,6 +14,7 @@ export async function updateProfile(prevState: ProfileState, formData: FormData)
 
   if (!user) return { error: 'Chưa đăng nhập' };
 
+  const nickname = formData.get('nickname') as string;
   const fullName = formData.get('fullName') as string;
   const phone = formData.get('phone') as string;
   const dateOfBirth = formData.get('dateOfBirth') as string;
@@ -26,24 +27,15 @@ export async function updateProfile(prevState: ProfileState, formData: FormData)
   const { error } = await supabase
     .from('user_profiles')
     .update({
-      full_name: fullName,
-      phone: phone || null,
+      nickname: nickname || null,
       date_of_birth: dateOfBirth || null,
       address: address || null,
     })
     .eq('id', user.id);
 
   if (error) {
-    if (error.message.includes('user_profiles_phone_key')) {
-      return { error: 'Số điện thoại này đã được đăng ký' };
-    }
     return { error: error.message };
   }
-
-  // Also update auth metadata
-  await supabase.auth.updateUser({
-    data: { full_name: fullName },
-  });
 
   revalidatePath('/tai-khoan');
   return { success: true };

@@ -14,12 +14,13 @@ export async function submitKyc(prevState: KycState, formData: FormData): Promis
 
   if (!user) return { error: 'Chưa đăng nhập' };
 
+  const fullName = formData.get('fullName') as string;
   const cccdNumber = formData.get('cccdNumber') as string;
   const cccdFront = formData.get('cccdFront') as File;
   const cccdBack = formData.get('cccdBack') as File;
   const selfie = formData.get('selfie') as File;
 
-  if (!cccdNumber || !cccdFront || !cccdBack || !selfie) {
+  if (!fullName || !cccdNumber || !cccdFront || !cccdBack || !selfie) {
     return { error: 'Vui lòng điền đầy đủ thông tin và tải ảnh' };
   }
 
@@ -85,8 +86,14 @@ export async function submitKyc(prevState: KycState, formData: FormData): Promis
     .update({
       kyc_status: 'pending',
       kyc_submitted_at: new Date().toISOString(),
+      full_name: fullName.toUpperCase(),
     })
     .eq('id', user.id);
+
+  // Update auth metadata
+  await supabase.auth.updateUser({
+    data: { full_name: fullName.toUpperCase() },
+  });
 
   revalidatePath('/kyc');
   revalidatePath('/trang-chu');

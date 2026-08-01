@@ -50,19 +50,36 @@ export default function KycForm() {
         </div>
       )}
 
-      {/* Step 1: CCCD Number */}
+      {/* Step 1: Thông tin CCCD */}
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>
           <span className={styles.stepNum}>1</span>
-          Số CCCD
+          Thông tin CCCD
         </h3>
+        
         <Input
-          name="cccdNumber"
-          label="Số Căn cước công dân"
-          placeholder="Nhập 12 chữ số"
+          name="fullName"
+          label="Họ và tên (y hệt trên CCCD)"
+          placeholder="NGUYEN VAN A"
           required
-          maxLength={12}
-          pattern="[0-9]{12}"
+          style={{ textTransform: 'uppercase' }}
+          hint="Viết hoa, không dấu hoặc có dấu y như thẻ"
+          icon={
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          }
+        />
+        
+        <div style={{ marginTop: '16px' }}>
+          <Input
+            name="cccdNumber"
+            label="Số Căn cước công dân"
+            placeholder="Nhập 12 chữ số"
+            required
+            maxLength={12}
+            pattern="[0-9]{12}"
           hint="12 chữ số trên mặt trước CCCD"
           icon={
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -72,6 +89,7 @@ export default function KycForm() {
             </svg>
           }
         />
+        </div>
       </div>
 
       {/* Step 2: CCCD Photos */}

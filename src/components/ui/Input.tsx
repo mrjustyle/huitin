@@ -42,7 +42,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         <div
           className={`${styles.inputContainer} ${error ? styles.inputError : ''} ${
             props.disabled ? styles.inputDisabled : ''
-          }`}
+          } ${props.readOnly ? styles.inputReadOnly : ''} `}
         >
           {icon && <span className={styles.icon}>{icon}</span>}
           <input

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { adminSearchUsers } from '@/features/admin/actions';
 import { activateVip, deactivateVip } from '@/features/subscription/actions';
 import styles from '@/app/admin/layout.module.css';
@@ -13,15 +13,18 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
+  const handleSearch = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setLoading(true);
     const data = await adminSearchUsers(query);
     setUsers(data);
     setSearched(true);
     setLoading(false);
   };
+
+  useEffect(() => {
+    handleSearch();
+  }, []);
 
   const kycBadge = (status: string) => {
     const map: Record<string, string> = {
@@ -68,7 +71,9 @@ export default function AdminUsersPage() {
       {searched && (
         <div className={styles.tableCard}>
           <div className={styles.tableCardHeader}>
-            <h3 className={styles.tableCardTitle}>Kết quả ({users.length})</h3>
+            <h3 className={styles.tableCardTitle}>
+              {query.trim() ? `Kết quả tìm kiếm (${users.length})` : `Tất cả người dùng (${users.length})`}
+            </h3>
           </div>
           <div className={styles.tableWrap}>
             {users.length === 0 ? (

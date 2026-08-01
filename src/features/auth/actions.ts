@@ -188,6 +188,14 @@ export async function setPhonePin(prevState: AuthState, formData: FormData): Pro
     user_metadata: { ...user.user_metadata, full_name: fullName || user.user_metadata.full_name }
   });
 
+  if (fullName) {
+    // Also explicitly update the user_profiles table since the auth trigger only runs on insert
+    await supabaseAdmin
+      .from('user_profiles')
+      .update({ full_name: fullName, nickname: fullName })
+      .eq('id', user.id);
+  }
+
   if (updateError) {
     console.error('Set PIN Error:', updateError);
     return { error: 'Không thể thiết lập Mã PIN, vui lòng thử lại.' };
@@ -221,9 +229,11 @@ export async function signInWithPhonePin(prevState: AuthState, formData: FormDat
   const password = rawPassword.length === 6 ? rawPassword + 'Huitin@2026' : rawPassword;
 
   const supabase = await createClient();
+  const searchPhone = phone.replace('+', '');
+  const hiddenEmail = `${searchPhone}@sms.huitin.com`;
 
   const { error } = await supabase.auth.signInWithPassword({
-    phone,
+    email: hiddenEmail,
     password,
   });
 

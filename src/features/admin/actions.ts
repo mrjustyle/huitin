@@ -65,11 +65,17 @@ export async function adminSearchUsers(query: string) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
 
-  const { data, error } = await supabase
+  let queryBuilder = supabase
     .from('user_profiles')
     .select('id, full_name, phone, kyc_status, created_at')
-    .or(`full_name.ilike.%${query}%,phone.ilike.%${query}%`)
-    .limit(20);
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (query && query.trim() !== '') {
+    queryBuilder = queryBuilder.or(`full_name.ilike.%${query}%,phone.ilike.%${query}%`);
+  }
+
+  const { data, error } = await queryBuilder;
 
   if (error) {
     console.error('[adminSearchUsers] profiles error:', error.message);

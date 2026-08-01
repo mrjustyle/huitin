@@ -8,6 +8,7 @@ import styles from './ProfileForm.module.css';
 
 interface ProfileFormProps {
   profile: {
+    nickname: string;
     fullName: string;
     phone: string;
     email: string;
@@ -36,10 +37,20 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
 
       <form action={action} className={styles.form}>
         <Input
+          name="nickname"
+          label="Bí danh (Tên hiển thị)"
+          defaultValue={profile.nickname}
+          placeholder="Tên gọi vui, dễ nhớ..."
+          icon={
+            <span style={{ display: 'inline-block', width: '18px', textAlign: 'center' }}>@</span>
+          }
+        />
+
+        <Input
           name="fullName"
-          label="Họ và tên"
+          label="Họ và tên (Pháp lý)"
           defaultValue={profile.fullName}
-          required
+          readOnly
           icon={
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
@@ -53,7 +64,7 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
           label="Số điện thoại"
           type="tel"
           defaultValue={profile.phone}
-          placeholder="0912 345 678"
+          readOnly
           icon={
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="5" y="2" width="14" height="20" rx="2" />

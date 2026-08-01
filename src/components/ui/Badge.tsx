@@ -18,7 +18,7 @@ export default function Badge({
   children,
 }: BadgeProps) {
   return (
-    <span className={`${styles.badge} ${styles[variant]} ${styles[size]}`}>
+    <span className={`${styles.badge} ${styles[variant]} ${styles[size]} `}>
       {dot && <span className={styles.dot} />}
       {children}
     </span>
