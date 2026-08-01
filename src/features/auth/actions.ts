@@ -8,10 +8,19 @@ export type AuthState = {
   success?: boolean;
 } | undefined;
 
+function formatPhone(p: string) {
+  let cleaned = p.replace(/\s+/g, '');
+  if (cleaned.startsWith('0')) return '+84' + cleaned.slice(1);
+  if (cleaned.startsWith('84')) return '+' + cleaned;
+  if (!cleaned.startsWith('+')) return '+' + cleaned;
+  return cleaned;
+}
+
 export async function sendPhoneOTP(phone: string) {
+  const formattedPhone = formatPhone(phone);
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({
-    phone,
+    phone: formattedPhone,
   });
 
   if (error) {
@@ -22,9 +31,10 @@ export async function sendPhoneOTP(phone: string) {
 }
 
 export async function verifyPhoneOTP(phone: string, otp: string) {
+  const formattedPhone = formatPhone(phone);
   const supabase = await createClient();
   const { error, data } = await supabase.auth.verifyOtp({
-    phone,
+    phone: formattedPhone,
     token: otp,
     type: 'sms',
   });
@@ -65,13 +75,14 @@ export async function setPhonePin(prevState: AuthState, formData: FormData): Pro
 }
 
 export async function signInWithPhonePin(prevState: AuthState, formData: FormData): Promise<AuthState> {
-  const phone = formData.get('phone') as string;
+  const rawPhone = formData.get('phone') as string;
   const rawPassword = formData.get('password') as string;
 
-  if (!phone || !rawPassword) {
+  if (!rawPhone || !rawPassword) {
     return { error: 'Vui lòng nhập số điện thoại và Mã PIN' };
   }
 
+  const phone = formatPhone(rawPhone);
   const password = rawPassword.length === 6 ? rawPassword + 'Huitin@2026' : rawPassword;
 
   const supabase = await createClient();
