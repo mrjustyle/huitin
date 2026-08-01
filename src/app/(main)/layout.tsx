@@ -10,6 +10,7 @@ import { NavItem } from './NavItem';
 import { IconBrand, IconHome, IconCycle, IconVerified, IconAccount, IconSecurity } from '@/components/ui/Icons';
 import ClientProviders from './ClientProviders';
 import InstallPWA from '@/components/ui/InstallPWA';
+import LinkPhoneOverlay from '@/components/auth/LinkPhoneOverlay';
 
 export default async function MainLayout({
   children,
@@ -24,6 +25,8 @@ export default async function MainLayout({
   if (!user) {
     redirect('/dang-nhap');
   }
+
+  const needsPhone = !user.phone;
 
   const displayName =
     user.user_metadata?.full_name || user.email?.split('@')[0] || 'Người dùng';
@@ -99,6 +102,8 @@ export default async function MainLayout({
       </nav>
 
       <InstallPWA />
+      
+      {needsPhone && <LinkPhoneOverlay />}
     </div>
   );
 }

@@ -218,3 +218,35 @@ export async function resetPassword(prevState: AuthState, formData: FormData): P
   return { success: true };
 }
 
+export async function linkPhone(phone: string) {
+  const supabase = await createClient();
+  const formattedPhone = formatPhone(phone);
+  
+  const { error } = await supabase.auth.updateUser({ phone: formattedPhone });
+  
+  if (error) {
+    if (error.message.includes('already registered')) {
+      throw new Error('Số điện thoại này đã có tài khoản trên Hụi Tín. Vui lòng đăng xuất và đăng nhập bằng Số điện thoại!');
+    }
+    throw new Error(error.message);
+  }
+  
+  return true;
+}
+
+export async function verifyLinkPhoneOTP(phone: string, otp: string) {
+  const supabase = await createClient();
+  const formattedPhone = formatPhone(phone);
+  
+  const { error, data } = await supabase.auth.verifyOtp({
+    phone: formattedPhone,
+    token: otp,
+    type: 'phone_change',
+  });
+  
+  if (error) {
+    throw new Error('Mã OTP không hợp lệ hoặc đã hết hạn.');
+  }
+  
+  return data;
+}

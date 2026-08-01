@@ -3,6 +3,7 @@
 import { useActionState, useState } from 'react';
 import Link from 'next/link';
 import { signInWithPhonePin, signIn } from '@/features/auth/actions';
+import { IconZalo } from '@/components/ui/Icons';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import styles from './page.module.css';
@@ -111,6 +112,7 @@ export default function LoginPage() {
               fullWidth
               size="lg"
               type="button"
+              style={{ color: '#0068FF', borderColor: '#0068FF' }}
               onClick={() => {
                 const appId = process.env.NEXT_PUBLIC_ZALO_APP_ID;
                 if (!appId) {
@@ -120,11 +122,7 @@ export default function LoginPage() {
                 const redirectUri = encodeURIComponent(`${window.location.origin}/api/auth/zalo/callback`);
                 window.location.href = `https://oauth.zaloapp.com/v4/permission?app_id=${appId}&redirect_uri=${redirectUri}&state=login`;
               }}
-              icon={
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM15.84 14.89L13.75 14.92V14.92L11.75 16.92V14.92H8.75C8.34 14.92 8 14.58 8 14.17V9.83C8 9.42 8.34 9.08 8.75 9.08H15.25C15.66 9.08 16 9.42 16 9.83V14.14C16 14.55 15.7 14.88 15.84 14.89ZM9.5 13.5H14.5V12.5H9.5V13.5ZM9.5 11.5H14.5V10.5H9.5V11.5Z" fill="#0068FF"/>
-                </svg>
-              }
+              icon={<IconZalo size={24} />}
             >
               Tiếp tục với Zalo
             </Button>

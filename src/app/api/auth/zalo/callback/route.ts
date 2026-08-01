@@ -72,28 +72,29 @@ export async function GET(request: Request) {
       );
     }
 
-    // Chuẩn hóa SĐT (ví dụ Zalo trả về 84912345678 -> 0912345678)
-    let phone = zaloPhone.toString();
-    if (phone.startsWith('84')) phone = '0' + phone.slice(2);
-    if (phone.startsWith('+84')) phone = '0' + phone.slice(3);
+    // Chuẩn hóa SĐT về E.164 (VD: +84912345678)
+    let rawPhone = zaloPhone.toString();
+    let phone = rawPhone.replace(/\s+/g, '');
+    if (phone.startsWith('0')) phone = '+84' + phone.slice(1);
+    else if (phone.startsWith('84')) phone = '+' + phone;
+    else if (!phone.startsWith('+')) phone = '+' + phone;
 
-    const email = `${phone}@huitin.com`;
+    // Email ảo ẩn dưới nền để phục vụ tính năng Magic Link của Zalo
+    // (Vì Supabase Admin API không hỗ trợ tạo Magic Link bằng số điện thoại)
+    const hiddenEmail = `${phone.replace('+', '')}@zalo.huitin.com`;
 
-    // 3. Kiểm tra xem User này đã có trong Supabase chưa bằng Email giả lập
-    const { data: existingUserRes } = await supabaseAdmin.auth.admin.getUserById(email); // getUserById actually takes UUID. Wait.
-    // We should use listUsers or just try to generateLink directly!
-    // If the user doesn't exist, generateLink will fail or we can just try to create the user first.
-
-    // Hãy thử lấy user bằng Admin API
+    // 3. Tìm xem có User nào đang giữ Số điện thoại này chưa (Cơ chế gộp tài khoản Hướng 2)
     const { data: usersData } = await supabaseAdmin.auth.admin.listUsers();
-    let user = usersData.users.find((u) => u.email === email);
+    let user = usersData.users.find((u) => u.phone === phone);
 
-    // 4. Nếu chưa có, tự động tạo tài khoản mới (Account Linking / Auto Signup)
+    // 4. Xử lý Logic
     if (!user) {
+      // 4a. Số điện thoại mới tinh -> Tạo tài khoản mới
       const { data: newUserRes, error: createError } = await supabaseAdmin.auth.admin.createUser({
-        email: email,
+        email: hiddenEmail,
         email_confirm: true,
         phone: phone,
+        phone_confirm: true,
         user_metadata: {
           full_name: fullName,
           zalo_id: zaloId,
@@ -103,18 +104,27 @@ export async function GET(request: Request) {
       if (createError) throw createError;
       user = newUserRes.user;
     } else {
-      // Gộp Zalo ID vào tài khoản hiện tại nếu chưa có
-      if (user.user_metadata?.zalo_id !== zaloId) {
-        await supabaseAdmin.auth.admin.updateUserById(user.id, {
-          user_metadata: { ...user.user_metadata, zalo_id: zaloId },
-        });
+      // 4b. Đã có tài khoản mang số điện thoại này (Tạo qua OTP hoặc Google+Link Phone)
+      // Cập nhật Zalo ID và gắn hiddenEmail (nếu họ chỉ có SĐT) để xài Magic Link
+      const updateData: any = {
+        user_metadata: { ...user.user_metadata, zalo_id: zaloId },
+      };
+      
+      if (!user.email) {
+        updateData.email = hiddenEmail;
+        updateData.email_confirm = true;
       }
+      
+      await supabaseAdmin.auth.admin.updateUserById(user.id, updateData);
+      
+      // Update local user object so we use the correct email for the magic link
+      user.email = user.email || hiddenEmail;
     }
 
-    // 5. Sinh Magic Link ẩn để cấp Session Token
+    // 5. Sinh Magic Link ẩn dựa trên Email của tài khoản
     const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
       type: 'magiclink',
-      email: email,
+      email: user.email!,
     });
 
     if (linkError) throw linkError;
