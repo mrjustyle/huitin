@@ -449,7 +449,24 @@
 /* -------- Responsive -------- */
 @media (max-width: 768px) {
   .statsRow {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: var(--space-4);
+    padding-bottom: var(--space-2);
+    -webkit-overflow-scrolling: touch;
+    /* Hide scrollbar for a cleaner look */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .statsRow::-webkit-scrollbar {
+    display: none;
+  }
+
+  .statCard {
+    flex: 0 0 85%;
+    scroll-snap-align: center;
   }
 
   .quickActions {
