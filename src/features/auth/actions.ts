@@ -83,7 +83,7 @@ export async function signInWithPhonePin(prevState: AuthState, formData: FormDat
 
   if (error) {
     if (error.message.includes('Invalid login credentials')) {
-      return { error: 'Email hoặc mật khẩu không đúng' };
+      return { error: 'Số điện thoại hoặc Mã PIN không đúng' };
     }
     return { error: error.message };
   }

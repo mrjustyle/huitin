@@ -8,13 +8,12 @@ import Input from '@/components/ui/Input';
 import styles from './page.module.css';
 
 export default function LoginPage() {
-  const [step, setStep] = useState<'phone' | 'otp' | 'dev'>('phone');
+  const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const [state, action, pending] = useActionState(signInWithPhonePin, undefined);
-  const [devState, devAction, devPending] = useActionState(signIn, undefined);
 
   const handleSendOTP = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,65 +27,18 @@ export default function LoginPage() {
         <h2 className={styles.title}>Đăng nhập</h2>
         <p className={styles.subtitle}>
           {step === 'phone' ? 'Chào mừng quay lại Hụi Tín' 
-            : step === 'dev' ? 'Đăng nhập nội bộ (Developer)'
             : `Nhập mã OTP gửi tới ${phone}`}
         </p>
       </div>
 
-      {(error || state?.error || devState?.error) && (
+      {(error || state?.error) && (
         <div className={styles.alert} role="alert">
           <span className={styles.alertIcon}>⚠</span>
-          {error || state?.error || devState?.error}
+          {error || state?.error}
         </div>
       )}
 
-      {step === 'dev' ? (
-        <form action={devAction} className={styles.form}>
-          <Input
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="email@example.com"
-            required
-            autoComplete="email"
-            icon={
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="M22 4L12 13L2 4" />
-              </svg>
-            }
-          />
-
-          <Input
-            label="Mật khẩu"
-            name="password"
-            type="password"
-            placeholder="Nhập mật khẩu"
-            required
-            autoComplete="current-password"
-            icon={
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" />
-                <path d="M7 11V7a5 5 0 0110 0v4" />
-              </svg>
-            }
-          />
-
-          <Button type="submit" fullWidth loading={devPending} size="lg" style={{ marginTop: '16px' }}>
-            Đăng nhập (Thật)
-          </Button>
-          
-          <div style={{ textAlign: 'center', marginTop: '16px' }}>
-            <button 
-              type="button" 
-              onClick={() => setStep('phone')}
-              style={{ color: 'var(--text-secondary)', fontSize: '14px', background: 'none', border: 'none', cursor: 'pointer' }}
-            >
-              ← Trở về giao diện người dùng
-            </button>
-          </div>
-        </form>
-      ) : step === 'phone' ? (
+      {step === 'phone' ? (
         <form onSubmit={handleSendOTP} className={styles.form}>
           <Input
             label="Số điện thoại"
@@ -184,15 +136,6 @@ export default function LoginPage() {
               Đăng ký ngay
             </Link>
           </p>
-          
-          <div style={{ textAlign: 'center', marginTop: '16px' }}>
-            <button 
-              onClick={() => setStep('dev')}
-              style={{ color: 'var(--color-gray-400)', fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
-            >
-              Dev: Đăng nhập bằng Email cũ
-            </button>
-          </div>
         </>
       )}
     </div>
