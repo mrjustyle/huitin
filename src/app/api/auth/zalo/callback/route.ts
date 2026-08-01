@@ -1,19 +1,22 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// Khởi tạo Supabase Admin Client (để vượt quyền tạo user/sinh magic link)
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-);
+// Bắt buộc Next.js không được build tĩnh (prerender) file API này
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
+  // Khởi tạo Supabase Admin Client bên trong hàm để tránh lỗi lúc build (thiếu env)
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  );
+
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
   const appId = process.env.NEXT_PUBLIC_ZALO_APP_ID;
