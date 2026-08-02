@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from 'react';
 import Link from 'next/link';
+import { Turnstile } from '@marsidev/react-turnstile';
 import { sendPhoneOTP, verifyPhoneOTP, setPhonePin } from '@/features/auth/actions';
 import { IconZalo } from '@/components/ui/Icons';
 import Button from '@/components/ui/Button';
@@ -16,6 +17,7 @@ export default function SignupPage() {
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
   
   const [state, action, pending] = useActionState(setPhonePin, undefined);
 
@@ -26,11 +28,16 @@ export default function SignupPage() {
       setError('Vui lòng đồng ý với Điều khoản sử dụng');
       return;
     }
+    if (!turnstileToken) {
+      setError('Vui lòng hoàn thành xác minh bảo mật');
+      return;
+    }
+    
     setLoading(true);
     setError(null);
     
     try {
-      const res = await sendPhoneOTP(phone);
+      const res = await sendPhoneOTP(phone, turnstileToken);
       if (typeof res === 'object' && res?.error) {
         setError(res.error);
         return;
@@ -126,20 +133,33 @@ export default function SignupPage() {
             }
           />
           
-          <label className={styles.checkboxLabel} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginTop: '12px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+          <label className={styles.checkboxLabel}>
             <input 
               type="checkbox" 
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
-              required 
-              style={{ marginTop: '2px' }} 
             />
             <span>
-              Tôi đồng ý với <Link href="/dieu-khoan">Điều khoản dịch vụ</Link> và <Link href="/bao-mat">Chính sách bảo mật</Link> của Hụi Tín.
+              Tôi đồng ý với <Link href="/thoa-thuan" className={styles.link}>Điều khoản dịch vụ</Link> và <Link href="/chinh-sach" className={styles.link}>Chính sách bảo mật</Link> của Hụi Tín.
             </span>
           </label>
 
-          <Button type="submit" fullWidth loading={loading} size="lg" style={{ marginTop: '16px' }} disabled={!agreed}>
+          <div style={{ margin: '1rem 0', display: 'flex', justifyContent: 'center' }}>
+            <Turnstile
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
+              onSuccess={(token) => setTurnstileToken(token)}
+              options={{
+                theme: 'dark'
+              }}
+            />
+          </div>
+
+          <Button 
+            type="submit" 
+            fullWidth 
+            disabled={!phone || !fullName || !agreed || !turnstileToken || loading}
+            loading={loading}
+          >
             Đăng ký bằng SĐT
           </Button>
         </form>

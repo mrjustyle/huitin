@@ -21,6 +21,7 @@
     "@capacitor/push-notifications": "^8.1.2",
     "@capacitor/splash-screen": "^8.0.2",
     "@capacitor/status-bar": "^8.0.3",
+    "@marsidev/react-turnstile": "^1.5.4",
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.109.0",
     "@types/crypto-js": "^4.2.2",

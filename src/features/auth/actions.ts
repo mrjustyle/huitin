@@ -17,8 +17,37 @@ function formatPhone(p: string) {
   return cleaned;
 }
 
-export async function sendPhoneOTP(phone: string) {
+export async function verifyTurnstileToken(token: string) {
+  const secretKey = process.env.TURNSTILE_SECRET_KEY;
+  if (!secretKey) return false;
+  
+  try {
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`,
+    });
+    const data = await res.json();
+    return data.success;
+  } catch (err) {
+    console.error('Turnstile verification failed:', err);
+    return false;
+  }
+}
+
+export async function sendPhoneOTP(phone: string, turnstileToken: string) {
   const formattedPhone = formatPhone(phone);
+  
+  if (!turnstileToken) {
+    return { error: 'Vui lòng xác minh bạn không phải là robot' };
+  }
+  
+  const isHuman = await verifyTurnstileToken(turnstileToken);
+  if (!isHuman) {
+    return { error: 'Xác minh bảo mật thất bại, vui lòng thử lại' };
+  }
 
   const supabaseAdmin = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -57,9 +86,9 @@ export async function sendPhoneOTP(phone: string) {
   let speedPhone = formattedPhone.replace('+', '');
 
   // LOG OTP CHO MỤC ĐÍCH TESTING
-  console.log('\n\n=========================================');
-  console.log(`MÃ SMS OTP CỦA SĐT ${speedPhone} LÀ: ${otp}`);
-  console.log('=========================================\n\n');
+  // console.log('\n\n=========================================');
+  // console.log(`MÃ SMS OTP CỦA SĐT ${speedPhone} LÀ: ${otp}`);
+  // console.log('=========================================\n\n');
 
   try {
     const res = await fetch('https://api.speedsms.vn/index.php/sms/send', {

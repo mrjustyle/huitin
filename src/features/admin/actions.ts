@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 // Helper kiểm tra quyền admin
 async function requireAdmin() {
@@ -19,6 +20,26 @@ async function requireAdmin() {
     return { error: 'Không có quyền Admin', user: null, supabase: null };
   }
   return { error: null, user, supabase };
+}
+
+export async function getRecentOTPs() {
+  const { error } = await requireAdmin();
+  if (error) return { error };
+
+  const supabaseAdmin = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  );
+
+  const { data, error: dbError } = await supabaseAdmin
+    .from('auth_otps')
+    .select('phone, otp, created_at, expires_at')
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (dbError) return { error: dbError.message };
+  return { otps: data };
 }
 
 export async function getAdminDashboardStats() {

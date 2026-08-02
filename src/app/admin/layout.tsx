@@ -38,6 +38,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin/kyc" className={styles.navLink}>
             ✅ Duyệt KYC
           </Link>
+          <Link href="/admin/otps" className={styles.navLink}>
+            🔐 Logs OTP
+          </Link>
           <Link href="/admin/disputes" className={styles.navLink}>
             ⚠️ Khiếu nại
           </Link>
