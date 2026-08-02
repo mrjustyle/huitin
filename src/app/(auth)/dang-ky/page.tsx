@@ -30,7 +30,11 @@ export default function SignupPage() {
     setError(null);
     
     try {
-      await sendPhoneOTP(phone);
+      const res = await sendPhoneOTP(phone);
+      if (typeof res === 'object' && res?.error) {
+        setError(res.error);
+        return;
+      }
       setStep('otp');
     } catch (err: any) {
       setError(err.message || 'Lỗi gửi OTP');
@@ -50,7 +54,11 @@ export default function SignupPage() {
     setError(null);
     
     try {
-      await verifyPhoneOTP(phone, otp);
+      const res = await verifyPhoneOTP(phone, otp);
+      if (typeof res === 'object' && res?.error) {
+        setError(res.error);
+        return;
+      }
       setStep('pin');
     } catch (err: any) {
       setError(err.message || 'Mã OTP không hợp lệ');

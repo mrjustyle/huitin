@@ -42,7 +42,7 @@ export async function sendPhoneOTP(phone: string) {
 
   if (dbError) {
     console.error('Lỗi lưu OTP:', dbError);
-    throw new Error('Lỗi hệ thống khi tạo OTP');
+    return { error: 'Lỗi hệ thống khi tạo OTP' };
   }
 
   if (isTestPhone) {
@@ -52,7 +52,7 @@ export async function sendPhoneOTP(phone: string) {
 
   // 3. Send SMS via SpeedSMS
   const smsToken = process.env.SPEEDSMS_API_TOKEN;
-  if (!smsToken) throw new Error('Chưa cấu hình SpeedSMS Token');
+  if (!smsToken) return { error: 'Chưa cấu hình SpeedSMS Token' };
 
   let speedPhone = formattedPhone.replace('+', '');
 
@@ -106,7 +106,7 @@ export async function verifyPhoneOTP(phone: string, otp: string) {
     .gte('expires_at', new Date().toISOString());
 
   if (fetchError || !otpRecords || otpRecords.length === 0) {
-    throw new Error('Mã OTP không hợp lệ hoặc đã hết hạn.');
+    return { error: 'Mã OTP không hợp lệ hoặc đã hết hạn.' };
   }
 
   // Delete the used OTP
@@ -128,7 +128,7 @@ export async function verifyPhoneOTP(phone: string, otp: string) {
       phone: formattedPhone,
       phone_confirm: true,
     });
-    if (createError) throw createError;
+    if (createError) return { error: createError.message };
     user = newUserRes.user;
   } else {
     // Ensure hidden email exists for magic link
