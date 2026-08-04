@@ -2,8 +2,8 @@
 
 import { useActionState, useState } from 'react';
 import Link from 'next/link';
-import { signInWithPhonePin, signIn } from '@/features/auth/actions';
-import { IconZalo } from '@/components/ui/Icons';
+import { signInWithPhonePin, signIn, signInWithGoogle } from '@/features/auth/actions';
+import { IconZalo, IconGoogle } from '@/components/ui/Icons';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import styles from './page.module.css';
@@ -107,6 +107,19 @@ export default function LoginPage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <form action={signInWithGoogle}>
+              <Button
+                variant="outline"
+                fullWidth
+                size="lg"
+                type="submit"
+                style={{ color: 'var(--text-primary)', borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-secondary)' }}
+                icon={<IconGoogle size={24} />}
+              >
+                Tiếp tục với Google
+              </Button>
+            </form>
+
             <Button
               variant="outline"
               fullWidth

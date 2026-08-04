@@ -3,8 +3,8 @@
 import { useActionState, useState } from 'react';
 import Link from 'next/link';
 import { Turnstile } from '@marsidev/react-turnstile';
-import { sendPhoneOTP, verifyPhoneOTP, setPhonePin } from '@/features/auth/actions';
-import { IconZalo } from '@/components/ui/Icons';
+import { sendPhoneOTP, verifyPhoneOTP, setPhonePin, signInWithGoogle } from '@/features/auth/actions';
+import { IconZalo, IconGoogle } from '@/components/ui/Icons';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import styles from '../dang-nhap/page.module.css';
@@ -226,6 +226,19 @@ export default function SignupPage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <form action={signInWithGoogle}>
+              <Button
+                variant="outline"
+                fullWidth
+                size="lg"
+                type="submit"
+                style={{ color: 'var(--text-primary)', borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-secondary)' }}
+                icon={<IconGoogle size={24} />}
+              >
+                Tiếp tục với Google
+              </Button>
+            </form>
+
             <Button
               variant="outline"
               fullWidth

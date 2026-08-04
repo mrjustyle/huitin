@@ -11,12 +11,12 @@ async function requireAdmin() {
 
   const { data: profile } = await supabase
     .from('user_profiles')
-    .select('is_admin')
+    .select('role')
     .eq('id', user.id)
     .single();
 
-  // Cho phép truy cập nếu user có cờ is_admin HOẶC trong môi trường dev
-  if (!profile?.is_admin) {
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'support';
+  if (!isAdmin) {
     return { error: 'Không có quyền Admin', user: null, supabase: null };
   }
   return { error: null, user, supabase };
