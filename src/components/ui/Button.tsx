@@ -1,14 +1,14 @@
 'use client';
 
-import { ButtonHTMLAttributes, ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { ReactNode } from 'react';
+import { motion, HTMLMotionProps } from 'framer-motion';
 import { useHaptic } from '@/hooks/useHaptic';
 import styles from './Button.module.css';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends Omit<HTMLMotionProps<"button">, "ref"> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
