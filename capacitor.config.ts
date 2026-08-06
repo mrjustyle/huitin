@@ -5,8 +5,8 @@ const config: CapacitorConfig = {
   appName: 'Hụi Tín – Sổ Hụi',
   webDir: 'out',
   server: {
-    url: 'http://192.168.110.98:3000',
-    cleartext: true,
+    url: 'https://sohuitin.com',
+    cleartext: false,
     androidScheme: 'https',
   },
   plugins: {

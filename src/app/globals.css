@@ -259,9 +259,9 @@ html {
   font-size: 17px;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
-  /* Prevent elastic bounce on iOS for more native feel */
   overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
 }
 
 body {
@@ -280,6 +280,7 @@ body {
   padding-right: env(safe-area-inset-right, 0);
   /* Prevent pull-to-refresh in PWA standalone mode */
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 }
 

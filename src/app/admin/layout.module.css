@@ -279,6 +279,11 @@
     border-right: none;
     border-bottom: 1px solid var(--border-color);
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .sidebar::-webkit-scrollbar {
+    display: none;
   }
   
   .brand {
