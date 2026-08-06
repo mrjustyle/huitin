@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createClient as createAdminClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/server';
 
 // Bắt buộc Next.js không được build tĩnh (prerender) file API này
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   // Khởi tạo Supabase Admin Client bên trong hàm để tránh lỗi lúc build (thiếu env)
-  const supabaseAdmin = createClient(
+  const supabaseAdmin = createAdminClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
     process.env.SUPABASE_SERVICE_ROLE_KEY || '',
     {
@@ -19,6 +20,7 @@ export async function GET(request: Request) {
 
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
+  const state = searchParams.get('state');
   const appId = process.env.NEXT_PUBLIC_ZALO_APP_ID;
   const secretKey = process.env.ZALO_SECRET_KEY;
 
@@ -64,6 +66,28 @@ export async function GET(request: Request) {
     }
 
     const { id: zaloId, name: fullName, phone: zaloPhone } = profileData;
+
+    // --- Xử lý tính năng LIÊN KẾT TÀI KHOẢN (state === 'link') ---
+    if (state === 'link') {
+      const supabaseUser = await createClient();
+      const { data: { user: currentUser } } = await supabaseUser.auth.getUser();
+      
+      if (!currentUser) {
+        return NextResponse.redirect(`${origin}/dang-nhap?error=Bạn chưa đăng nhập`);
+      }
+
+      // Cập nhật zalo_id vào user_metadata
+      const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(currentUser.id, {
+        user_metadata: { ...currentUser.user_metadata, zalo_id: zaloId }
+      });
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      return NextResponse.redirect(`${origin}/tai-khoan?success=Đã liên kết Zalo thành công`);
+    }
+    // --- Kết thúc xử lý liên kết ---
 
     // Nếu Zalo không trả về SĐT, bắt người dùng phải nhập tay SĐT
     if (!zaloPhone) {

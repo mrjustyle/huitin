@@ -6,8 +6,8 @@ import styles from './VipPayment.module.css';
 
 // Config — update these with real bank info
 const BANK_CONFIG = {
-  bankId: 'MB',
-  accountNo: '0389888999',
+  bankId: 'VCB',
+  accountNo: '0381002711531',
   accountName: 'HUI TIN JSC',
 };
 
@@ -15,7 +15,7 @@ const PLANS = [
   {
     id: 'monthly' as const,
     label: '1 Tháng',
-    price: 99000,
+    price: 49000,
     originalPrice: undefined as number | undefined,
     description: 'Thử nghiệm gói VIP',
     badge: undefined as string | undefined,
@@ -23,8 +23,8 @@ const PLANS = [
   {
     id: 'yearly' as const,
     label: '1 Năm',
-    price: 990000,
-    originalPrice: 1188000,
+    price: 490000,
+    originalPrice: 588000,
     description: 'Tiết kiệm 17%',
     badge: 'Phổ biến nhất',
   },
@@ -85,7 +85,7 @@ export default function VipPayment({ userId, userCode }: VipPaymentProps) {
           <h3 className={styles.transferTitle}>Thông tin chuyển khoản</h3>
           <div className={styles.infoRow}>
             <span className={styles.infoLabel}>Ngân hàng</span>
-            <span className={styles.infoValue}>MB Bank (Quân Đội)</span>
+            <span className={styles.infoValue}>Vietcombank (VCB)</span>
           </div>
           <div className={styles.infoRow}>
             <span className={styles.infoLabel}>Số tài khoản</span>
@@ -108,7 +108,7 @@ export default function VipPayment({ userId, userCode }: VipPaymentProps) {
 
           <div className={styles.note}>
             <p>⚡ Ghi đúng nội dung chuyển khoản để hệ thống tự động kích hoạt VIP.</p>
-            <p>⏱️ Thời gian xử lý: tức thì (nếu dùng SePay/Casso) hoặc tối đa 24h (thủ công).</p>
+            <p>⏱️ Thời gian xử lý: Tối đa 24h.</p>
           </div>
         </div>
       </div>

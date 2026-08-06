@@ -197,6 +197,7 @@ export default function SignupPage() {
         <form action={action} className={styles.form}>
           <input type="hidden" name="fullName" value={fullName} />
           <input type="hidden" name="phone" value={phone} />
+          <input type="hidden" name="otp" value={otp} />
 
           <Input
             label="Tạo Mã PIN (6 số)"

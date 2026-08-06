@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { formatVND, HUI_STATUS_LABELS, CYCLE_LABELS } from '@/lib/constants';
+import CountUpMoney from '@/components/ui/CountUpMoney';
 import Badge from '@/components/ui/Badge';
 import { IconLedger, IconOwner, IconPayment, IconAccount, IconPayout, IconCycle } from '@/components/ui/Icons';
 import { getDashboardStats } from '@/features/dashboard/actions';
@@ -127,8 +128,8 @@ export default async function DashboardPage() {
           <div className={styles.statCard}>
             <span className={styles.statIcon} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><IconPayment size={24} /></span>
             <div>
-              <p className={`${styles.statValue} money`}>{activeGroups.length > 0 ? formatVND(totalValue) : '—'}</p>
-              <p className={styles.statLabel}>Phần hụi/kỳ</p>
+              <p className={`${styles.statValue} money`}>{activeGroups.length > 0 ? <CountUpMoney value={totalValue} /> : '—'}</p>
+              <p className={styles.statLabel}>Tổng giá trị dây hụi đang chạy</p>
             </div>
           </div>
         </div>
@@ -164,7 +165,7 @@ export default async function DashboardPage() {
                   <p className={styles.taskDesc}>{c.hui_periods.hui_groups.name} · Hạn: {new Date(c.hui_periods.payment_due_date).toLocaleDateString('vi-VN')}</p>
                 </div>
                 <div className={styles.taskAction}>
-                  <span className="money" style={{ color: '#ef4444', fontWeight: 600 }}>{formatVND(c.amount_due)}</span>
+                  <span className="money" style={{ color: '#ef4444', fontWeight: 600 }}><CountUpMoney value={c.amount_due} /></span>
                 </div>
               </Link>
             ))}
@@ -177,7 +178,7 @@ export default async function DashboardPage() {
                   <p className={styles.taskDesc}>{p.hui_groups.name}</p>
                 </div>
                 <div className={styles.taskAction}>
-                  <span className="money" style={{ color: '#10b981', fontWeight: 600 }}>{formatVND(p.payout_amount - p.commission_amount)}</span>
+                  <span className="money" style={{ color: '#10b981', fontWeight: 600 }}><CountUpMoney value={p.payout_amount - p.commission_amount} /></span>
                 </div>
               </Link>
             ))}
@@ -281,7 +282,7 @@ export default async function DashboardPage() {
                     )}
                   </div>
                   <div className={styles.groupValue}>
-                    <span className="money">{formatVND(g.share_value)}</span>
+                    <span className="money"><CountUpMoney value={g.share_value} duration={1} /></span>
                     <span className={styles.groupRole} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                       {membership?.role === 'owner' ? <IconOwner size={16} /> : <IconAccount size={16} />}
                     </span>

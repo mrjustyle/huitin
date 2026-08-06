@@ -1,6 +1,8 @@
 'use client';
 
 import { ButtonHTMLAttributes, ReactNode } from 'react';
+import { motion } from 'framer-motion';
+import { useHaptic } from '@/hooks/useHaptic';
 import styles from './Button.module.css';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
@@ -37,11 +39,28 @@ export default function Button({
     .filter(Boolean)
     .join(' ');
 
+  const { haptic } = useHaptic();
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!disabled && !loading) {
+      if (variant === 'danger') {
+        haptic('heavy');
+      } else {
+        haptic('light');
+      }
+    }
+    if (props.onClick) {
+      props.onClick(e);
+    }
+  };
+
   return (
-    <button
+    <motion.button
+      whileTap={disabled || loading ? {} : { scale: 0.95 }}
       className={classNames}
       disabled={disabled || loading}
       {...props}
+      onClick={handleClick}
     >
       {loading && (
         <span className={styles.spinner} aria-hidden="true">
@@ -59,6 +78,6 @@ export default function Button({
       )}
       {icon && !loading && <span className={styles.icon}>{icon}</span>}
       <span className={loading ? styles.labelLoading : ''}>{children}</span>
-    </button>
+    </motion.button>
   );
 }

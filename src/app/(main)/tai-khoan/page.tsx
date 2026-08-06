@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import ProfileForm from './ProfileForm';
 import ReputationCard from '@/features/profile/components/ReputationCard';
 import BankAccountList from '@/features/profile/components/BankAccountList';
+import LinkedAccounts from '@/features/profile/components/LinkedAccounts';
 import ThemeSwitcher from '@/components/ui/ThemeSwitcher';
 import Link from 'next/link';
 import { signOut } from '@/features/auth/actions';
@@ -18,6 +19,17 @@ export default async function AccountPage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) redirect('/dang-nhap');
+
+  const hasGoogle = user.identities?.some((id) => id.provider === 'google') || false;
+  const googleIdentityId = user.identities?.find((id) => id.provider === 'google')?.identity_id;
+  const hasZalo = !!user.user_metadata?.zalo_id;
+  
+  // Can only unlink if they have at least 1 other method (e.g. phone, or both google and zalo)
+  let linkCount = 0;
+  if (user.phone) linkCount++;
+  if (hasGoogle) linkCount++;
+  if (hasZalo) linkCount++;
+  const canUnlink = linkCount > 1;
 
   const { data: profile } = await supabase
     .from('user_profiles')
@@ -51,6 +63,13 @@ export default async function AccountPage() {
           />
 
           <BankAccountList accounts={bankAccounts || []} />
+
+          <LinkedAccounts 
+            hasGoogle={hasGoogle} 
+            googleIdentityId={googleIdentityId}
+            hasZalo={hasZalo}
+            canUnlink={canUnlink}
+          />
 
           {/* Link to KYC Page */}
           <div className={styles.infoCard}>

@@ -24,15 +24,19 @@ export default function LinkPhoneOverlay() {
     setError(null);
     
     try {
-      await linkPhone(phone);
-      setStep('otp');
-    } catch (err: any) {
-      if (err.message.includes('tài khoản trên Hụi Tín')) {
-        setError(err.message);
-        setStep('conflict');
+      const result = await linkPhone(phone);
+      if (result && result.error) {
+        if (result.error.includes('tài khoản trên Hụi Tín')) {
+          setError(result.error);
+          setStep('conflict');
+        } else {
+          setError(result.error);
+        }
       } else {
-        setError(err.message || 'Lỗi gửi OTP');
+        setStep('otp');
       }
+    } catch (err: any) {
+      setError(err.message || 'Lỗi gửi OTP');
     } finally {
       setLoading(false);
     }
@@ -46,9 +50,13 @@ export default function LinkPhoneOverlay() {
     setError(null);
     
     try {
-      await verifyLinkPhoneOTP(phone, otp);
-      // Reload page to dismiss overlay
-      window.location.reload();
+      const result = await verifyLinkPhoneOTP(phone, otp);
+      if (result && result.error) {
+        setError(result.error);
+      } else {
+        // Reload page to dismiss overlay
+        window.location.reload();
+      }
     } catch (err: any) {
       setError(err.message || 'Lỗi xác nhận OTP');
     } finally {

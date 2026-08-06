@@ -114,7 +114,7 @@ export async function sendPhoneOTP(phone: string, turnstileToken: string) {
   } catch (err) {
     console.error('Lỗi gọi API SpeedSMS:', err);
   }
-  return true;
+  return { success: true };
 }
 
 export async function verifyPhoneOTP(phone: string, otp: string) {
@@ -138,9 +138,7 @@ export async function verifyPhoneOTP(phone: string, otp: string) {
     return { error: 'Mã OTP không hợp lệ hoặc đã hết hạn.' };
   }
 
-  // Delete the used OTP
-  await supabaseAdmin.from('auth_otps').delete().eq('id', otpRecords[0].id);
-
+  // KHÔNG xóa OTP ở đây nữa, giữ lại để bước setPhonePin xác thực lại
   // 2. Find or create user via Admin API
   const { data: usersData } = await supabaseAdmin.auth.admin.listUsers();
 
@@ -179,6 +177,11 @@ export async function setPhonePin(prevState: AuthState, formData: FormData): Pro
   const fullName = formData.get('fullName') as string;
 
   const phone = formData.get('phone') as string;
+  const otp = formData.get('otp') as string;
+
+  if (!otp) {
+    return { error: 'Lỗi: Không tìm thấy mã xác thực OTP' };
+  }
 
   if (!rawPassword) {
     return { error: 'Vui lòng nhập Mã PIN' };
@@ -203,6 +206,18 @@ export async function setPhonePin(prevState: AuthState, formData: FormData): Pro
   const formattedPhone = formatPhone(phone);
   const searchPhone = formattedPhone.replace('+', '');
 
+  // 1. Verify OTP again to prevent IDOR vulnerability
+  const { data: otpRecords, error: fetchError } = await supabaseAdmin
+    .from('auth_otps')
+    .select('*')
+    .eq('phone', formattedPhone)
+    .eq('otp', otp)
+    .gte('expires_at', new Date().toISOString());
+
+  if (fetchError || !otpRecords || otpRecords.length === 0) {
+    return { error: 'Phiên đăng ký không hợp lệ hoặc mã OTP đã hết hạn.' };
+  }
+
   // Find user by phone
   const { data: usersData } = await supabaseAdmin.auth.admin.listUsers();
   const user = usersData.users.find((u) => u.phone === searchPhone);
@@ -210,6 +225,9 @@ export async function setPhonePin(prevState: AuthState, formData: FormData): Pro
   if (!user) {
     return { error: 'Không tìm thấy tài khoản người dùng' };
   }
+
+  // Delete the used OTP now that we are actually setting the PIN
+  await supabaseAdmin.from('auth_otps').delete().eq('id', otpRecords[0].id);
 
   // Set password via admin API
   const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
@@ -360,6 +378,77 @@ export async function signInWithGoogle(formData?: FormData) {
   }
 }
 
+export async function linkGoogleIdentity() {
+  const supabase = await createClient();
+
+  const { headers } = await import('next/headers');
+  const headerStore = await headers();
+  const origin = headerStore.get('origin')
+    || headerStore.get('x-forwarded-host') && `https://${headerStore.get('x-forwarded-host')}`
+    || process.env.NEXT_PUBLIC_APP_URL
+    || 'http://localhost:3000';
+
+  const { data, error } = await supabase.auth.linkIdentity({
+    provider: 'google',
+    options: {
+      redirectTo: `${origin}/api/auth/callback?next=/tai-khoan`,
+    },
+  });
+
+  if (error) {
+    console.error('Lỗi liên kết Google:', error.message);
+    return { error: 'Lỗi liên kết Google: ' + error.message };
+  }
+
+  if (data.url) {
+    redirect(data.url);
+  }
+}
+
+export async function unlinkGoogleIdentity() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: 'Chưa đăng nhập' };
+
+  const identity = user.identities?.find(id => id.provider === 'google');
+  if (!identity) return { error: 'Không tìm thấy liên kết Google' };
+
+  const { error } = await supabase.auth.unlinkIdentity(identity);
+  
+  if (error) {
+    console.error('Lỗi hủy liên kết:', error.message);
+    return { error: 'Lỗi hủy liên kết: ' + error.message };
+  }
+  
+  return { success: true };
+}
+
+export async function unlinkZaloIdentity() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: 'Chưa đăng nhập' };
+
+  const supabaseAdmin = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  );
+
+  const newMetadata = { ...user.user_metadata };
+  delete newMetadata.zalo_id;
+
+  const { error } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
+    user_metadata: newMetadata
+  });
+
+  if (error) {
+    console.error('Lỗi hủy Zalo:', error.message);
+    return { error: 'Lỗi hủy Zalo: ' + error.message };
+  }
+  
+  return { success: true };
+}
+
 export async function resetPassword(prevState: AuthState, formData: FormData): Promise<AuthState> {
   const password = formData.get('password') as string;
   const confirmPassword = formData.get('confirmPassword') as string;
@@ -409,7 +498,7 @@ export async function linkPhone(phone: string) {
   const existingUser = usersData.users.find(u => u.phone === searchPhone);
 
   if (existingUser) {
-    throw new Error('Số điện thoại này đã có tài khoản trên Hụi Tín. Vui lòng đăng xuất và đăng nhập bằng Số điện thoại!');
+    return { error: 'Số điện thoại này đã có tài khoản trên Hụi Tín. Vui lòng đăng xuất và đăng nhập bằng Số điện thoại!' };
   }
 
   // Check if it's a test phone number to bypass SMS API
@@ -428,17 +517,17 @@ export async function linkPhone(phone: string) {
 
   if (dbError) {
     console.error('Lỗi lưu OTP:', dbError);
-    throw new Error('Lỗi hệ thống khi tạo OTP');
+    return { error: 'Lỗi hệ thống khi tạo OTP' };
   }
 
   if (isTestPhone) {
     console.log(`[TEST MODE] Bỏ qua gọi API SpeedSMS cho số ${formattedPhone}. Mã OTP là: ${otp}`);
-    return true;
+    return { success: true };
   }
 
   // 3. Send SMS via SpeedSMS
   const smsToken = process.env.SPEEDSMS_API_TOKEN;
-  if (!smsToken) throw new Error('Chưa cấu hình SpeedSMS Token');
+  if (!smsToken) return { error: 'Chưa cấu hình SpeedSMS Token' };
 
   let speedPhone = formattedPhone.replace('+', '');
 
@@ -471,13 +560,13 @@ export async function linkPhone(phone: string) {
     console.error('Lỗi gọi API SpeedSMS:', err);
   }
 
-  return true;
+  return { success: true };
 }
 
 export async function verifyLinkPhoneOTP(phone: string, otp: string) {
   const supabaseUser = await createClient(); // Get current user session
   const { data: { user } } = await supabaseUser.auth.getUser();
-  if (!user) throw new Error('Bạn chưa đăng nhập');
+  if (!user) return { error: 'Bạn chưa đăng nhập' };
 
   const supabaseAdmin = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -496,7 +585,7 @@ export async function verifyLinkPhoneOTP(phone: string, otp: string) {
     .gte('expires_at', new Date().toISOString());
 
   if (fetchError || !otpRecords || otpRecords.length === 0) {
-    throw new Error('Mã OTP không hợp lệ hoặc đã hết hạn.');
+    return { error: 'Mã OTP không hợp lệ hoặc đã hết hạn.' };
   }
 
   // Delete the used OTP
@@ -509,7 +598,7 @@ export async function verifyLinkPhoneOTP(phone: string, otp: string) {
   });
 
   if (updateError) {
-    throw new Error('Lỗi liên kết số điện thoại: ' + updateError.message);
+    return { error: 'Lỗi liên kết số điện thoại: ' + updateError.message };
   }
 
   return { success: true };

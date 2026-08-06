@@ -81,6 +81,17 @@ export default async function MainLayout({
         </div>
       </aside>
 
+      {/* Mobile Top Header */}
+      <div className={styles.mobileTopHeader}>
+        <Link href="/trang-chu" className={styles.logo}>
+          <IconBrand size={24} />
+          <span>Hụi Tín</span>
+        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <ThemeToggle />
+        </div>
+      </div>
+
       {/* Main content */}
       <main className={styles.main}>
         <ClientProviders>
@@ -92,10 +103,6 @@ export default async function MainLayout({
       <nav className={styles.bottomNav}>
         <NavItem href="/trang-chu" icon={<IconHome />} label="Trang chủ" mobile />
         <NavItem href="/day-hui" icon={<IconCycle />} label="Dây hụi" mobile />
-        <div className={styles.bottomNavItem}>
-          <NotificationBell />
-          <span className={styles.bottomNavLabel}>Thông báo</span>
-        </div>
         <NavItem href="/kyc" icon={<IconVerified />} label="Xác minh" mobile />
         <NavItem href="/tai-khoan" icon={<IconAccount />} label="Tài khoản" mobile />
         {isAdmin && <NavItem href="/admin" icon={<IconSecurity />} label="Admin" mobile />}

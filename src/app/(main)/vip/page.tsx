@@ -88,11 +88,11 @@ export default async function VipPage() {
           <div className={styles.pricingHeader}>
             <h2>💎 VIP</h2>
             <div className={styles.pricingPrice}>
-              <span className={styles.priceAmount}>{formatVND(99000)}</span>
+              <span className={styles.priceAmount}>{formatVND(49000)}</span>
               <span className={styles.priceUnit}>/tháng</span>
             </div>
             <div className={styles.pricingSave}>
-              Hoặc {formatVND(990000)}/năm (tiết kiệm 17%)
+              Hoặc {formatVND(490000)}/năm (tiết kiệm 17%)
             </div>
           </div>
           <ul className={styles.pricingFeatures}>
